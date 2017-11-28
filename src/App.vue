@@ -74,14 +74,17 @@ export default {
 
 }
 .HolyGrail-nav,.HolyGrail-ads{
-  flex:0 0 20em;
+  flex:0 0 15em;
   background:#f0f0f0;
 }
 .HolyGrail-nav{
   order:-1;
   background:#f0f0f0;
   
-
+}
+.video-js{
+    width: 100%;
+    height: 360px;
 
 }
 </style>

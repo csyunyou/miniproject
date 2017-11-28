@@ -32,17 +32,17 @@ export default {
     return {
       liveBroadCastItems: [{
         time: "11:30",
-        name: "日本的不同时期",
-        host: "王海燕"
+        name: "underscore源码解析",
+        host: "云游"
       }, {
         time: "17:00",
-        name: "不同日本的今天",
-        host: "王海燕"
+        name: "zepto源码解析",
+        host: "云游"
       }],
       vodItems: [{
         time: "18:00",
-        name: "日本的不同时期",
-        host: "王海燕"
+        name: "vue源码解析",
+        host: "云游"
       }]
     }
   }

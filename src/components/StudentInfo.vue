@@ -10,7 +10,7 @@
         </div>
         <div class="content">
           <div class="student-name">学生用户</div>
-          <div>饮料的渴望</div>
+          <div>云游的小迷弟</div>
         </div>
       </div>
       <div class="extrainfo-wrapper">
@@ -66,7 +66,7 @@ export default {
   display: inline-block;
 }
 .extrainfo-wrapper{
-	width:30%;
+	/*width:30%;*/
 }
 .extrainfo-list{
 	background:#c7e9c0;
