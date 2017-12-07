@@ -12,7 +12,7 @@ export default {
 }
 
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
 .footer {
   flex: 0 0 9em;
   border:1px solid black;

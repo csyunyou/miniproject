@@ -3,7 +3,7 @@ const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const pkg = require('../package.json')
-
+var glob = require('glob');
 exports.assetsPath = function (_path) {
   const assetsSubDirectory = process.env.NODE_ENV === 'production'
     ? config.build.assetsSubDirectory
@@ -96,4 +96,16 @@ exports.createNotifierCallback = function () {
       icon: path.join(__dirname, 'logo.png')
     })
   }
+}
+exports.getEntry=function(globPath) {
+  var entries = {},
+    basename, tmp, pathname;
+
+  glob.sync(globPath).forEach(function (entry) {
+    basename = path.basename(entry, path.extname(entry));
+    tmp = entry.split('/').splice(-3);
+    pathname = tmp.splice(0, 1) + '\/' + basename; // 正确输出js和html的路径
+    entries[pathname] = entry;
+  });
+  return entries;
 }

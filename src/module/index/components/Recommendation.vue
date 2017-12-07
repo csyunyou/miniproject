@@ -1,19 +1,19 @@
 <template>
   <div class="recommendation">
-<!--     <div class="books-carousel">
+    <div class="books-carousel">
       <el-carousel :interval="4000" type="card" height="250px" arrow="always">
         <el-carousel-item v-for="item in 3" :key="item" class="item-wrapper">
-          <img src='../assets/book1.jpg' height="200" width="200" />
+          <img src='../../../assets/book1.jpg' height="200" width="200" />
           <div>今日推荐：红宝书</div>
           <div>时间：2017年11月14日</div>
         </el-carousel-item>
       </el-carousel>
-    </div> -->
-    <div>
+    </div>
+<!--     <div>
           <video class="video-js" controls preload="auto"  poster="http://ppt.downhot.com/d/file/p/2014/08/12/9d92575b4962a981bd9af247ef142449.jpg" data-setup="{}">
             <source src="rtmp://localhost:1935/live1/root" type="rtmp/flv">  
           </video>
-    </div>
+    </div> -->
   </div>
 </template>
 <script type="text/javascript">

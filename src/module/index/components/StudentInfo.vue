@@ -6,7 +6,7 @@
     <div class="info">
       <div class="maininfo-wrapper">
         <div class="avatar">
-          <img src="../assets/favicon.jpg" height="50" width="50" />
+          <img src="../../../assets/favicon.jpg" height="50" width="50" />
         </div>
         <div class="content">
           <div class="student-name">学生用户</div>
@@ -15,7 +15,7 @@
       </div>
       <div class="extrainfo-wrapper">
       	<ul class="extrainfo-list">
-      		<li v-for="item in extraInfoItems"><a href="http://www.baidu.com">{{item}}</a></li>
+          <li v-for="(val,key) in linkInfo"><router-link :to="key">{{val}}</router-link></li>
       	</ul>
       </div>
     </div>
@@ -25,7 +25,14 @@
 export default {
   data() {
   	return{
-  		extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
+      linkInfo:{
+        wallet:'钱包余额',
+        record:'脚步记录',
+        share:'我的分享',
+        coupoun:'我的优惠',
+        info:'资料补充',
+      }
+  		// extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
   	}
   }
 }
