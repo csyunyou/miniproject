@@ -30,7 +30,7 @@ export default {
         record:'脚步记录',
         share:'我的分享',
         coupoun:'我的优惠',
-        info:'资料补充',
+        supplementaryInfo:'资料补充',
       }
   		// extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
   	}
