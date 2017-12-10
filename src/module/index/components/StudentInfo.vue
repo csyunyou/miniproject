@@ -15,7 +15,7 @@
       </div>
       <div class="extrainfo-wrapper">
       	<ul class="extrainfo-list">
-          <li v-for="(val,key) in linkInfo"><router-link :to="key">{{val}}</router-link></li>
+          <li v-for="(val,key) in linkInfo"><router-link :to="`/${key}`">{{val}}</router-link></li>
       	</ul>
       </div>
     </div>
@@ -27,7 +27,7 @@ export default {
   	return{
       linkInfo:{
         wallet:'钱包余额',
-        record:'脚步记录',
+        footprint:'脚步记录',
         share:'我的分享',
         coupoun:'我的优惠',
         supplementaryInfo:'资料补充',

@@ -3,7 +3,8 @@
 		<div class="title"><h4>类型选择：</h4></div>
 		<div class="tag-wrapper">
 			<div v-for="rowIdx in category.length/numPerRow" class="category-row">
-				<el-tag v-for="colIdx in numPerRow" class="category-tag">{{category[(rowIdx-1)*numPerRow+colIdx-1]}}</el-tag>
+				<el-button type="primary" plain v-for="colIdx in numPerRow" class="category-tag" size="small">{{category[(rowIdx-1)*numPerRow+colIdx-1]}}</el-button>
+				<!-- <el-tag v-for="colIdx in numPerRow" class="category-tag">{{category[(rowIdx-1)*numPerRow+colIdx-1]}}</el-tag> -->
 			</div>
 		</div>
 	</div>
@@ -27,7 +28,7 @@ export default{
 	margin-bottom: 10px;
 }
 .category-tag{
-	margin-right: 20px;
+	margin-right: 8px;
 }
 .category-row{
 	margin-bottom: 10px;
