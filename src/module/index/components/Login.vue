@@ -6,7 +6,7 @@
     </div>
     <el-alert title="warningInfo" type="error" show-icon v-show="warningInfo">
     </el-alert>
-    <el-form :model="loginForm" label-width="70px" size="small" class="login-form" ref="registerForm" :rules="rules">
+    <el-form :model="loginForm" label-width="70px" size="small" class="login-form" ref="loginForm" :rules="rules">
       <el-form-item label="账号" prop="account">
         <el-input v-model="loginForm.account"></el-input>
       </el-form-item>
@@ -21,7 +21,7 @@
         <el-button type="primary" @click="login">立即登录</el-button>
       </el-form-item>
       <el-form-item>
-        <el-checkbox v-model="autoLogin">下次自动登录</el-checkbox>
+        <el-checkbox v-model="loginForm.autoLogin">下次自动登录</el-checkbox>
       </el-form-item>
     </el-form>
     <div class="footer">
@@ -39,9 +39,9 @@ export default {
       loginForm: {
         account: "",
         password: "",
-        verificationCode: ""
+        verificationCode: "",
+        autoLogin: false,
       },
-      autoLogin: false,
       warningInfo: "",
       rules: {
         account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
@@ -54,19 +54,21 @@ export default {
   methods: {
     login() {
       let vm = this
-      this.$refs.registerForm.validate(valid => {
+      this.$refs.loginForm.validate((valid) => {
+        console.log('validate')
         if (valid) {
-          axios.post('user/login', {
-            account: this.loginForm.account,
-            password: this.loginForm.password
-          }).then(function(reponse) {
-            if (response.status === 0) {
-              vm.$store.commit('SET_USRINFO', response.data)
-              vm.$sotre.commit('SET_LOGIN', true)
-            } else if (response.status === 1) {
-              vm.warningInfo = "账户不存在或密码错误"
-            }
-          })
+          alert('yes')
+          /*          axios.post('user/login', {
+                      account: this.loginForm.account,
+                      password: this.loginForm.password
+                    }).then(function(reponse) {
+                      if (response.status === 0) {
+                        vm.$store.commit('SET_USRINFO', response.data)
+                        vm.$sotre.commit('SET_LOGIN', true)
+                      } else if (response.status === 1) {
+                        vm.warningInfo = "账户不存在或密码错误"
+                      }
+                    })*/
         } else {
           console.log('erro')
           return false;
@@ -90,6 +92,8 @@ export default {
         cb(new Error('请输入验证码'));
       else if (val.toLowerCase() !== this.verification.code)
         cb(new Error('验证码不正确'));
+      else
+        cb();
     }
   },
   created() {

@@ -7,6 +7,7 @@ import vodList from '../components/VodList.vue'
 import livebroadcastList from '../components/LivebroadcastList.vue'
 import supplementaryInfo from '../components/SupplementaryInfo.vue'
 import videoPlayer from '../components/VideoPlayer.vue'
+import footprint from '../components/Footprint.vue'
 import test from '../components/Test.vue'
 Vue.use(Router)
 
@@ -39,6 +40,9 @@ export default new Router({
     },{
       path: '/videoPlayer',
       component:videoPlayer
+    },{
+      path: '/footprint',
+      component:footprint
     }
   ]
 })

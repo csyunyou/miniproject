@@ -39,7 +39,7 @@ export default {
         if (this.form.confirmPwd !== '') {
           this.$refs.form.validateField('confirmPwd');
         }
-        cb();
+        // cb();
       }
     },
     confirmPwdValidator(rule, val, cb) {
@@ -55,7 +55,8 @@ export default {
       let vm = this
       this.$refs.form.validate(valid => {
         if (valid) {
-          axios.post('user/setPassword', {
+          console.log('success')
+/*          axios.post('user/setPassword', {
             account: vm.form.account,
             checkCode: vm.form.checkCode
           }).then(function(reponse) {
@@ -64,7 +65,7 @@ export default {
             } else if (response.status === 1) {
               vm.warningInfo = "账户不存在或密码错误"
             }
-          })
+          })*/
         } else {
           console.log('erro')
           return false;

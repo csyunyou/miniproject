@@ -13,7 +13,7 @@
         <el-button type="primary" class="checkCode-btn">免费获取校验码</el-button>
         <!-- <img :src="verificationImgSrc" height="32"/> -->
       </el-form-item>
-      <el-form-item label="昵称">
+      <el-form-item label="昵称" prop="nickname">
         <el-input v-model="registerForm.nickname"></el-input>
       </el-form-item>
       <!--       <el-form-item label="验证码" prop="verificationCode">
@@ -29,12 +29,16 @@
         <el-button type="primary" @click="register">马上注册</el-button>
       </el-form-item>
     </el-form>
+    <div class="errorInfo">
+      <span>{{error}}</span>
+    </div>
     <div class="footer">
       <div @click="loginHandler">已有账号，立即登录</div>
     </div>
   </div>
 </template>
 <script type="text/javascript">
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -52,7 +56,8 @@ export default {
         password: [{ validator: this.passwordValidator, trigger: 'blur' }],
         confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }],
         nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
-      }
+      },
+      errorInfo:""
     }
   },
   methods: {
@@ -60,18 +65,19 @@ export default {
       let vm = this
       this.$refs.registerForm.validate(valid => {
         if (valid) {
-          axios.post('user/register', {
+          console.log(`${this.$store.state.domain}/User/reg`)
+          axios.post(`${this.$store.state.domain}/User/reg`, {
             phoneNumber: this.registerForm.phoneNumber,
             password: this.registerForm.password,
-            checkCode: this.registerForm.checkCode
+            checkCode: this.registerForm.checkCode,
+            nickname:this.registerForm.nickname
           }).then(function(response) {
-
+            
           })
         } else {
           console.log('error')
         }
       })
-
     },
     loginHandler() {
       this.$emit("close")
@@ -82,6 +88,8 @@ export default {
         cb(new Error("请输入手机号"))
       else if (!val.match(/^1[3|4|5|8][0-9]\d{4,8}$/))
         cb(new Error('无效的手机号'))
+      else
+        cb()
     },
     passwordValidator(rule, val, cb) {
       if (val === '') {

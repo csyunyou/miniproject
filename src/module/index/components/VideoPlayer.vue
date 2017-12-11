@@ -17,7 +17,7 @@ export default {
         },
         mounted() {
 
-            // console.log(this.$route.query.videoLink)
+            console.log(this.$route.query.id)
         }
 }
 </script>

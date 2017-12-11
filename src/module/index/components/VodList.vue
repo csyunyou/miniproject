@@ -32,7 +32,7 @@ export default {
     },
     methods: {
         rowClickHandler(row, evt, col) {
-          this.$router.push({path:`/videoPlayer`,query:{videoLink:`${row.link}`}})
+          this.$router.push({path:`/videoPlayer`,query:{id:`${row.id}`,type:'vod'}})
         }
     },
     mounted() {
@@ -44,17 +44,21 @@ export default {
                     title: "和平与战争",
                     date: "2016-10-11",
                     speaker: "云游",
-                    link: "rtmp://live.hkstv.hk.lxdns.com/live/hks"
+                    link: "rtmp://live.hkstv.hk.lxdns.com/live/hks",
+                    id:3
                 })
             else
                 this.tableData.push({
                     title: "如何高效地学习",
                     date: "2016-03-01",
                     speaker: "旋律",
-                    link: "rtmp://live.hkstv.hk.lxdns.com/live/hks"
+                    link: "rtmp://live.hkstv.hk.lxdns.com/live/hks",
+                    id:4
                 })
         }
         console.log(this.$route.query.keyword)
+        if(!this.$route.query.keyword)
+            return this.tableData
         this.tableData=this.tableData.filter(function(d){
           return d.title.indexOf(vm.$route.query.keyword)!==-1||d.speaker.indexOf(vm.$route.query.keyword)!==-1;
         })
