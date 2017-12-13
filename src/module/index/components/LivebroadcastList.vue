@@ -3,7 +3,7 @@
     <div class="proceed-list-wrapper">
       <div class="proceed-list">
         <div class="title">直播中</div>
-        <el-table :data="proceedInfo.tableData.slice((proceedInfo.currentPage-1)*proceedInfo.pageSize,(proceedInfo.currentPage-1)*proceedInfo.pageSize+proceedInfo.pageSize)" stripe style="width: 100%">
+        <el-table :data="proceedInfo.tableData.slice((proceedInfo.currentPage-1)*proceedInfo.pageSize,(proceedInfo.currentPage-1)*proceedInfo.pageSize+proceedInfo.pageSize)" stripe style="width: 100%" @row-click="rowClickHandler">
           <el-table-column prop="title" label="标题" width="180">
           </el-table-column>
           <el-table-column prop="date" label="时间" width="180">
@@ -57,35 +57,43 @@ export default {
       }
     }
   },
+  methods: {
+    rowClickHandler(row, evt, col) {
+      this.$router.push({ path: `/videoPlayer`, query: { id: `${row.id}`, type: 'live' } })
+    }
+  },
   mounted() {
     let rand
-    for (let i = 0; i < 20; i++) {
-      rand = Math.floor(Math.random() * 5)
-      if (rand % 2 === 0) {
+    for (let i = 0; i < 10; i++) {
+      if (i/ 5 <1) {
         this.proceedInfo.tableData.push({
           title: "和平与战争",
           date: "2016-10-11",
           speaker: "云游",
-          place: "杭州西湖区"
+          place: "杭州西湖区",
+          id:1
         })
         this.endInfo.tableData.push({
           title: "如何高效地学习",
           date: "2016-03-01",
           speaker: "旋律",
-          place: "杭州余杭区"
+          place: "杭州余杭区",
+          id:2
         })
       } else {
         this.proceedInfo.tableData.push({
-          title: "如何高效地学习",
+          title: "编程之美",
           date: "2016-03-01",
           speaker: "旋律",
-          place: "杭州余杭区"
+          place: "杭州余杭区",
+          id:3
         })
         this.endInfo.tableData.push({
-          title: "和平与战争",
+          title: "数学之美",
           date: "2016-10-11",
           speaker: "云游",
-          place: "杭州西湖区"
+          place: "杭州西湖区",
+          id:4
         })
       }
     }
@@ -114,9 +122,9 @@ export default {
 
 .proceed-list,
 .end-list {
-	box-sizing: border-box;
-	width: 100%;
-	padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 20px;
 }
 
 .title {

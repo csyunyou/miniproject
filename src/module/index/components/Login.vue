@@ -4,7 +4,7 @@
       <span>登录</span>
       <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
     </div>
-    <el-alert title="warningInfo" type="error" show-icon v-show="warningInfo">
+    <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo">
     </el-alert>
     <el-form :model="loginForm" label-width="70px" size="small" class="login-form" ref="loginForm" :rules="rules">
       <el-form-item label="账号" prop="account">
@@ -55,20 +55,19 @@ export default {
     login() {
       let vm = this
       this.$refs.loginForm.validate((valid) => {
-        console.log('validate')
         if (valid) {
-          alert('yes')
-          /*          axios.post('user/login', {
-                      account: this.loginForm.account,
-                      password: this.loginForm.password
-                    }).then(function(reponse) {
-                      if (response.status === 0) {
-                        vm.$store.commit('SET_USRINFO', response.data)
-                        vm.$sotre.commit('SET_LOGIN', true)
-                      } else if (response.status === 1) {
-                        vm.warningInfo = "账户不存在或密码错误"
-                      }
-                    })*/
+          this.$axios.post('User/login', {
+            phoneNumber: this.loginForm.account,
+            password: this.loginForm.password
+          }).then(function({ data }) {
+            if (data.code === "1000") {
+              vm.$store.commit('SET_USERINFO',data.data)
+              vm.$store.commit('SET_LOGIN', true)
+              vm.$emit("close")
+            } else {
+              vm.warningInfo = data.message
+            }
+          })
         } else {
           console.log('erro')
           return false;

@@ -1,6 +1,6 @@
 export default{
-	SET_USRINFO:function(state,info){
-		state.usrInfo=info
+	SET_USERINFO:function(state,info){
+		state.userInfo=info
 	},
 	SET_LOGIN:function(state,islogin){
 		state.isLogin=islogin

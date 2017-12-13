@@ -29,8 +29,8 @@
         <el-button type="primary" @click="register">马上注册</el-button>
       </el-form-item>
     </el-form>
-    <div class="errorInfo">
-      <span>{{error}}</span>
+    <div class="errorInfo" v-show="registerMsg">
+      <span>*{{registerMsg}}</span>
     </div>
     <div class="footer">
       <div @click="loginHandler">已有账号，立即登录</div>
@@ -45,7 +45,7 @@ export default {
       registerForm: {
         phoneNumber: "",
         checkCode: "",
-        nickname:"",
+        nickname: "",
         // verificationCode: "",
         password: "",
         confirmPwd: ""
@@ -57,22 +57,37 @@ export default {
         confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }],
         nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
       },
-      errorInfo:""
+      registerMsg: ""
     }
   },
   methods: {
+    /*    test() {
+          console.log(`${this.$store.state.domain}/User/reg`)
+          axios({
+            method: 'post',
+            url: `${this.$store.state.domain}/User/reg`,
+             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            // url:'http://localhost:3001/users/getTest2',
+            // headers: { "Access-Control-Allow-Headers" },
+            data: {
+              test: 'name'
+            }
+          }).then(function(response) {
+            console.log(response)
+          })
+        },*/
     register() {
       let vm = this
       this.$refs.registerForm.validate(valid => {
         if (valid) {
-          console.log(`${this.$store.state.domain}/User/reg`)
-          axios.post(`${this.$store.state.domain}/User/reg`, {
-            phoneNumber: this.registerForm.phoneNumber,
-            password: this.registerForm.password,
-            checkCode: this.registerForm.checkCode,
-            nickname:this.registerForm.nickname
-          }).then(function(response) {
-            
+          this.$axios.post(
+            '/User/reg', {
+              phoneNumber: this.registerForm.phoneNumber,
+              password: this.registerForm.password,
+              checkCode: this.registerForm.checkCode,
+              nickname: this.registerForm.nickname
+            }).then(function({ data }) {
+            vm.registerMsg = data.message
           })
         } else {
           console.log('error')
@@ -118,6 +133,13 @@ export default {
 
 </script>
 <style type="text/css" scoped>
+.errorInfo {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
 .register {
   width: 400px;
   background-color: #fff;
@@ -169,8 +191,15 @@ export default {
 
 
 
+
+
+
+
+
+
+
 /*.checkCode-btn{
-	font-size:10px;
+  font-size:10px;
 }*/
 
 </style>
