@@ -1,7 +1,7 @@
 <template>
   <div class="SupplementaryInfo">
     <div class="header">
-      <el-tabs v-model="activeTag" type="card" @tab-click="handleClick">
+      <el-tabs v-model="activeTag" type="card">
         <el-tab-pane label="基本信息" name="first"></el-tab-pane>
         <el-tab-pane label="安全设置" name="second"></el-tab-pane>
       </el-tabs>
@@ -14,18 +14,18 @@
           </el-form-item>
           <el-form-item label="性别">
             <el-radio-group v-model="form.gender">
-              <el-radio label="男"></el-radio>
-              <el-radio label="女"></el-radio>
+              <el-radio label="0">男</el-radio>
+              <el-radio label="1">女</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="出生日期">
-            <el-date-picker type="date" placeholder="选择日期" v-model="form.birtdate" style="width: 100%;"></el-date-picker>
+            <el-date-picker type="date" placeholder="选择日期" v-model="form.birthdate" style="width: 100%;" value-format="yyyy-MM-dd"></el-date-picker>
           </el-form-item>
           <el-form-item label="固定电话">
             <el-input v-model="form.telephone"></el-input>
           </el-form-item>
           <el-form-item label="居住地">
-            <el-cascader expand-trigger="hover" :options="cityOptions" v-model="form.residence" @change="handleChange">
+            <el-cascader expand-trigger="hover" :options="cityOptions" v-model="form.residence">
             </el-cascader>
           </el-form-item>
           <el-form-item label="邮政编码">
@@ -76,10 +76,11 @@ export default {
         name: '',
         gener: '',
         birthdate: '',
-        residence: '',
+        residence: [],
         postcode: '',
         education: '',
         monthlyIncome: '',
+        telephone:''
       },
       showTips: true,
       secureInfo: {
@@ -91,10 +92,10 @@ export default {
       showBasicInfo: true,
       cityOptions: [{
         label: '浙江省',
-        value: 'ZJ',
+        value: 'ZheJiang',
         children: [{
           label: '杭州市',
-          value: 'HZ',
+          value: 'HangZhou',
           children: [{
             label: '西湖区',
             value: 'XiHu'
@@ -105,14 +106,23 @@ export default {
         }]
       }],
       educationLevel: [{
-        label: '本科'
+        label: '本科',
+        value:0
       }, {
-        label: '研究生'
+        label: '研究生',
+        value:1
       }, {
-        label: '大专'
+        label: '大专',
+        value:2
       }, {
-        label: '大专以下'
+        label: '大专以下',
+        value:3
       }]
+    }
+  },
+  methods:{
+    onSubmit(){
+      console.log(this.form)
     }
   }
 }

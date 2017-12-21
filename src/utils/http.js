@@ -1,5 +1,9 @@
 import axios from 'axios'
 import qs from 'qs'
+axios.defaults.withCredentials = true
+axios.interceptors.response.use(function(response){
+  console.log(response)
+})
 // 请求方式的配置
 export default {
   post(url, data) { //  post

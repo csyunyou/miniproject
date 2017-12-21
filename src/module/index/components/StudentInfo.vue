@@ -22,6 +22,7 @@
         </ul>
       </div>
     </div>
+    <button @click="checkLogin">log in?</button>
     <div v-show="showLogin||showRegister||showForgetPwd" class="shadow"></div>
     <div class="register-login-wrapper">
       <login v-show="showLogin" @close="showLogin=false" @register="showRegister=true" @forgetPwd="showForgetPwd=true"></login>
@@ -53,13 +54,19 @@ export default {
       // extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
     }
   },
-  methods:{
-    logout(){
-      this.$store.commit("SET_LOGIN",false)
+  methods: {
+    logout() {
+      this.$axios.post('User/logout').then(function(data) {
+      })
+    },
+    checkLogin() {
+      this.$axios.post('User/islogin').then(function(data) {
+        // console.log(data)
+      })
     }
   },
-  computed:{
-    userInfo(){
+  computed: {
+    userInfo() {
       return this.$store.state.userInfo
     }
   },

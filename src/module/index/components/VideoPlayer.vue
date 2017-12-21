@@ -52,7 +52,7 @@ export default {
       },
       videoPlayer: null,
       videoInfo: {},
-      shareLink:"http://baidu.com",
+      shareLink:"http://192.168.155.1:8087/#/videoPlayer?type=vod",
       showQRCode: false
     }
   },
@@ -70,7 +70,7 @@ export default {
         title: "如何高效地学习",
         date: "2016-03-01",
         speaker: "旋律",
-        link: "http://localhost:3001/video/testmp4.mp4",
+        link: "http://http://192.168.155.1:3001/video/testmp4.mp4",
         id: 4
       }
       this.videoPlayer.src({ type: 'video/mp4', src: this.videoInfo.link })
