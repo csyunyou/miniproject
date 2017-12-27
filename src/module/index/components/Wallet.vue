@@ -20,35 +20,51 @@
 export default {
   data() {
     return {
-    	balance:0,
-    	award:100
+      balance: 0,
+      award: 100
     }
+  },
+  mounted() {
+    let vm=this
+    this.$axios.post('User/islogin').then(function({ data }) {
+      if (data.code === "1000") {
+        vm.$store.commit("SET_USERINFO",data.data)
+      }
+    })
   }
 }
 
 </script>
 <style type="text/css" scoped>
-.walletInfo{
-	margin:20px;
+.walletInfo {
+  margin: 20px;
 }
-.title{
-font-weight: bold;
+
+.title {
+  font-weight: bold;
 }
-.balance-wrapper,.award-wrapper{
-	display: inline-block;
+
+.balance-wrapper,
+.award-wrapper {
+  display: inline-block;
 }
-.balance-wrapper{
-	width: 25%;
+
+.balance-wrapper {
+  width: 25%;
 }
-.award-wrapper{
-	margin-left: 20px;
+
+.award-wrapper {
+  margin-left: 20px;
 }
+
 .note {
   font-size: 12px;
   color: #93999f
 }
-.content{
+
+.content {
   font-size: 60px;
   margin-left: 90px;
 }
+
 </style>

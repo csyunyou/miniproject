@@ -4,8 +4,9 @@ import Vuex from 'vuex';
 import mutations from './mutations';
 Vue.use(Vuex);
 const state = {
-	isLogin:false,
-	userInfo:{}	
+	// uid:null,
+	userInfo:null,
+	showLogin:false
 };
 export default new Vuex.Store({
   state,

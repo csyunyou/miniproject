@@ -62,8 +62,8 @@ export default {
           }).then(function({ data }) {
             if (data.code === "1000") {
               vm.$store.commit('SET_USERINFO',data.data)
-              vm.$store.commit('SET_LOGIN', true)
               vm.$emit("close")
+              vm.$router.push({path:'/'})
             } else {
               vm.warningInfo = data.message
             }

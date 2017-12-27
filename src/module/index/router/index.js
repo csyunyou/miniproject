@@ -8,10 +8,12 @@ import livebroadcastList from '../components/LivebroadcastList.vue'
 import supplementaryInfo from '../components/SupplementaryInfo.vue'
 import videoPlayer from '../components/VideoPlayer.vue'
 import footprint from '../components/Footprint.vue'
+import loginHint from '../components/LoginHint.vue'
 import test from '../components/Test.vue'
+import axios from '../../../utils/http.js'
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [{
       path: '/',
       component: indexRecommendation
@@ -19,30 +21,47 @@ export default new Router({
     {
       path: '/share',
       component: share
-    },{
+    }, {
       path: '/index',
-      redirect:'/'
-    },{
+      redirect: '/'
+    }, {
       path: '/wallet',
-      component:wallet
-    },{
+      component: wallet
+    }, {
       path: '/vodList',
-      component:vodList
-    },{
+      component: vodList
+    }, {
       path: '/livebroadcastList',
-      component:livebroadcastList
-    },{
+      component: livebroadcastList
+    }, {
       path: '/test',
-      component:test
-    },{
+      component: test
+    }, {
       path: '/supplementaryInfo',
-      component:supplementaryInfo
-    },{
+      component: supplementaryInfo
+    }, {
       path: '/videoPlayer',
-      component:videoPlayer
-    },{
+      component: videoPlayer
+    }, {
       path: '/footprint',
-      component:footprint
+      component: footprint
+    }, {
+      path: '/loginhint',
+      component: loginHint
     }
   ]
 })
+router.beforeEach((to, from, next) => {
+  console.log('beforeHook')
+  if (to.path !== '/loginhint')
+    axios.post('User/islogin').then(function({data}) {
+      if (data.code === "1000"){
+        next()
+      }
+      else
+        next({ path: '/loginhint' })
+    })
+  else
+    next()
+})
+export default router

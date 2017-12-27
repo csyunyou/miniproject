@@ -3,6 +3,7 @@ import qs from 'qs'
 axios.defaults.withCredentials = true
 axios.interceptors.response.use(function(response){
   console.log(response)
+  return response
 })
 // 请求方式的配置
 export default {

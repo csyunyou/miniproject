@@ -1,7 +1,7 @@
 <template>
   <div class="student-info">
     <div class="status">
-      <span @click="showLogin=true" v-if="!$store.state.isLogin">登录|注册</span>
+      <span @click="$store.commit('SET_SHOWLOGIN',true)" v-if="!userInfo">登录|注册</span>
       <span v-else @click="logout">退出</span>
     </div>
     <div class="info">
@@ -11,7 +11,7 @@
         </div>
         <div class="content">
           <div class="student-name">学生用户</div>
-          <div>{{userInfo.user_nickname}}</div>
+          <div>{{userInfo?userInfo.user_nickname:"null"}}</div>
         </div>
       </div>
       <div class="extrainfo-wrapper">
@@ -25,8 +25,8 @@
     <button @click="checkLogin">log in?</button>
     <div v-show="showLogin||showRegister||showForgetPwd" class="shadow"></div>
     <div class="register-login-wrapper">
-      <login v-show="showLogin" @close="showLogin=false" @register="showRegister=true" @forgetPwd="showForgetPwd=true"></login>
-      <register v-show="showRegister" @close="showRegister=false" @login="showLogin=true"></register>
+      <login v-show="showLogin" @close="$store.commit('SET_SHOWLOGIN',false)" @register="showRegister=true" @forgetPwd="showForgetPwd=true"></login>
+      <register v-show="showRegister" @close="showRegister=false" @login="$store.commit('SET_SHOWLOGIN',true)"></register>
       <forget-password v-show="showForgetPwd" @close="showForgetPwd=false" @validateSuccess="showSetPwd=true"></forget-password>
       <set-password v-show="showSetPwd" @close="showSetPwd=false"></set-password>
     </div>
@@ -47,7 +47,7 @@ export default {
         coupoun: '我的优惠',
         supplementaryInfo: '资料补充',
       },
-      showLogin: false,
+      // showLogin: false,
       showRegister: false,
       showForgetPwd: false,
       showSetPwd: false,
@@ -56,7 +56,9 @@ export default {
   },
   methods: {
     logout() {
+      let vm=this
       this.$axios.post('User/logout').then(function(data) {
+        vm.$store.commit('SET_USERINFO',null)
       })
     },
     checkLogin() {
@@ -68,6 +70,9 @@ export default {
   computed: {
     userInfo() {
       return this.$store.state.userInfo
+    },
+    showLogin(){
+      return this.$store.state.showLogin
     }
   },
   components: {
