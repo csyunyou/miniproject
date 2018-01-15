@@ -10,7 +10,7 @@
       </el-form-item>
       <el-form-item label="校验码">
         <el-input v-model="registerForm.checkCode" class="checkCode-input"></el-input>
-        <el-button type="primary" class="checkCode-btn">免费获取校验码</el-button>
+        <el-button type="primary" class="checkCode-btn" @click="getCheckcode">免费获取校验码</el-button>
         <!-- <img :src="verificationImgSrc" height="32"/> -->
       </el-form-item>
       <el-form-item label="昵称" prop="nickname">
@@ -81,17 +81,25 @@ export default {
       this.$refs.registerForm.validate(valid => {
         if (valid) {
           this.$axios.post(
-            '/User/reg', {
-              phoneNumber: this.registerForm.phoneNumber,
+            '/public/register', {
+              mobile: this.registerForm.phoneNumber,
               password: this.registerForm.password,
               checkCode: this.registerForm.checkCode,
               nickname: this.registerForm.nickname
             }).then(function({ data }) {
-            vm.registerMsg = data.message
+            vm.registerMsg = data.str
           })
         } else {
           console.log('error')
         }
+      })
+    },
+    getCheckcode(){
+      this.$axios.post('/public/sendCheckcode',{
+        mobile:this.registerForm.phoneNumber,
+        templatecode:'tp_code1'
+      }).then(function(){
+
       })
     },
     loginHandler() {

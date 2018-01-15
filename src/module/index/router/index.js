@@ -53,9 +53,9 @@ const router = new Router({
 })
 router.beforeEach((to, from, next) => {
   console.log('beforeHook')
-  if (to.path !== '/loginhint')
-    axios.post('User/islogin').then(function({data}) {
-      if (data.code === "1000"){
+  if (to.path !== '/loginhint'||to.path!=='/')
+    axios.post('/public/islogin').then(function({data}) {
+      if (data.code === 0){
         next()
       }
       else

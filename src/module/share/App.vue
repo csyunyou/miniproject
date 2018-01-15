@@ -1,6 +1,7 @@
 <template>
 	<div>
-		<p>share page</p>
+		<p class="first">share page</p>
+		<p class="second">share page</p>
 	</div>
 </template>
 <script type="text/javascript">
@@ -12,6 +13,11 @@ export default{
 	}
 }
 </script>
-<style type="text/css" scoped>
-	
+<style  scoped lang="scss">
+$background:#ccc;
+div{
+	p.first{
+		background-color: $background;
+	}
+}
 </style>

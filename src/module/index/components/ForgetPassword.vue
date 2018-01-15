@@ -10,7 +10,7 @@
       </el-form-item>
       <el-form-item label="校验码" prop="checkCode">
         <el-input v-model="form.checkCode" class="checkCode-input"></el-input>
-        <el-button type="primary" class="checkCode-btn">免费获取校验码</el-button>
+        <el-button type="primary" class="checkCode-btn" @click="getCheckcode">免费获取校验码</el-button>
         <!-- <img :src="verificationImgSrc" height="32"/> -->
       </el-form-item>
       <el-form-item>
@@ -35,9 +35,9 @@ export default {
   },
   methods: {
     next() {
-    	this.$emit("close")
-    	this.$emit("validateSuccess")
-    	return 
+      this.$emit("close")
+      this.$emit("validateSuccess")
+      return
       let vm = this
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -46,7 +46,7 @@ export default {
             checkCode: vm.form.checkCode
           }).then(function(reponse) {
             if (response.status === 0) {
-            	vm.$emit("validateSuccess")
+              vm.$emit("validateSuccess")
             } else if (response.status === 1) {
               vm.warningInfo = "账户不存在或密码错误"
             }
@@ -55,6 +55,14 @@ export default {
           console.log('erro')
           return false;
         }
+      })
+    },
+    getCheckcode() {
+      this.$axios.post('/public/sendCheckcode', {
+        mobile: this.form.account,
+        templatecode: 'tp_code2'
+      }).then(function() {
+
       })
     }
   }

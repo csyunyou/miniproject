@@ -56,11 +56,11 @@ export default {
       let vm = this
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$axios.post('User/login', {
-            phoneNumber: this.loginForm.account,
+          this.$axios.post('public/login', {
+            mobile: this.loginForm.account,
             password: this.loginForm.password
           }).then(function({ data }) {
-            if (data.code === "1000") {
+            if (data.code === 1) {
               vm.$store.commit('SET_USERINFO',data.data)
               vm.$emit("close")
               vm.$router.push({path:'/'})
@@ -85,6 +85,7 @@ export default {
     },
     changeVerification() {
       this.verification = verification.create();
+      console.log(this.verification.code)
     },
     verificationCodeValidator(rule, val, cb) {
       if (val === "")

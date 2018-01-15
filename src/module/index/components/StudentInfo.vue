@@ -23,6 +23,7 @@
       </div>
     </div>
     <button @click="checkLogin">log in?</button>
+    <button @click="setpwd">setpwd</button>
     <div v-show="showLogin||showRegister||showForgetPwd" class="shadow"></div>
     <div class="register-login-wrapper">
       <login v-show="showLogin" @close="$store.commit('SET_SHOWLOGIN',false)" @register="showRegister=true" @forgetPwd="showForgetPwd=true"></login>
@@ -57,14 +58,17 @@ export default {
   methods: {
     logout() {
       let vm=this
-      this.$axios.post('User/logout').then(function(data) {
+      this.$axios.post('public/logout').then(function(data) {
         vm.$store.commit('SET_USERINFO',null)
       })
     },
     checkLogin() {
-      this.$axios.post('User/islogin').then(function(data) {
+      this.$axios.post('public/islogin').then(function(data) {
         // console.log(data)
       })
+    },
+    setpwd(){
+      
     }
   },
   computed: {
