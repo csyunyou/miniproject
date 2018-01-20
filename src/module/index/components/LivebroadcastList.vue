@@ -55,9 +55,11 @@ export default {
               pageSize: 3,
               tableData: []
             }*/
-      currentPage: 0,
+      tableData: [],
+      currentPage: 1,
       pageSize: 3,
-      tableData: []
+      keyword:null,
+      totalCount:0
     }
   },
   computed:{
