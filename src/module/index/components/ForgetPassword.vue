@@ -4,6 +4,8 @@
       <span>找回密码</span>
       <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
     </div>
+    <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo">
+    </el-alert>
     <el-form :model="form" label-width="65px" size="small" class="form" ref="form" :rules="rules">
       <el-form-item label="账号" prop="account">
         <el-input v-model="form.account"></el-input>
@@ -30,25 +32,27 @@ export default {
       rules: {
         account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
         checkCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
-      }
+      },
+      warningInfo: ""
     }
   },
   methods: {
     next() {
-      this.$emit("close")
-      this.$emit("validateSuccess")
-      return
+      // this.$emit("close")
+      // this.$emit("validateSuccess")
+      // return
       let vm = this
       this.$refs.form.validate(valid => {
         if (valid) {
-          axios.post('user/login', {
-            account: vm.form.account,
+          this.$axios.post('public/validateSetPwdcheckCode', {
+            mobile: vm.form.account,
             checkCode: vm.form.checkCode
-          }).then(function(reponse) {
-            if (response.status === 0) {
-              vm.$emit("validateSuccess")
-            } else if (response.status === 1) {
-              vm.warningInfo = "账户不存在或密码错误"
+          }).then(function({ data }) {
+            if (data.code === 1) {
+              vm.$emit("close")
+              vm.$emit("validateSuccess",{mobile:vm.form.account,checkCode:vm.form.checkCode})
+            } else if (data.code === 0) {
+              vm.warningInfo = data.str
             }
           })
         } else {

@@ -4,6 +4,8 @@
       <span>设置新密码</span>
       <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
     </div>
+    <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo">
+    </el-alert>
     <el-form :model="form" size="small" class="form" ref="form" :rules="rules">
       <el-form-item prop="password">
         <el-input v-model="form.password"></el-input>
@@ -28,9 +30,11 @@ export default {
       rules: {
         password: [{ validator: this.passwordValidator, trigger: 'blur' }],
         confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }]
-      }
+      },
+      warningInfo: ""
     }
   },
+  props: ['credential'],
   methods: {
     passwordValidator(rule, val, cb) {
       if (val === '') {
@@ -39,7 +43,7 @@ export default {
         if (this.form.confirmPwd !== '') {
           this.$refs.form.validateField('confirmPwd');
         }
-        // cb();
+        cb();
       }
     },
     confirmPwdValidator(rule, val, cb) {
@@ -56,16 +60,18 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           console.log('success')
-/*          axios.post('user/setPassword', {
-            account: vm.form.account,
-            checkCode: vm.form.checkCode
-          }).then(function(reponse) {
-            if (response.status === 0) {
-              vm.$emit("validateSuccess")
-            } else if (response.status === 1) {
-              vm.warningInfo = "账户不存在或密码错误"
-            }
-          })*/
+          this.$axios.post('public/setPassword', {
+            mobile: this.credential.mobile,
+            checkCode: this.credential.checkCode,
+            password: this.form.password
+          }).then(function({ data }) {
+            vm.warningInfo = data.str
+            /*            if (data.str === 1) {
+                          vm.$emit("validateSuccess")
+                        } else if (response.status === 1) {
+                          vm.warningInfo = "账户不存在或密码错误"
+                        }*/
+          })
         } else {
           console.log('erro')
           return false;

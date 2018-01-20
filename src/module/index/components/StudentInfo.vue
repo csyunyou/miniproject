@@ -1,7 +1,7 @@
 <template>
   <div class="student-info">
     <div class="status">
-      <span @click="$store.commit('SET_SHOWLOGIN',true)" v-if="!userInfo">登录|注册</span>
+      <span @click="$store.commit('SET_SHOWLOGIN',true)" v-if="status==='offLine'">登录|注册</span>
       <span v-else @click="logout">退出</span>
     </div>
     <div class="info">
@@ -11,7 +11,7 @@
         </div>
         <div class="content">
           <div class="student-name">学生用户</div>
-          <div>{{userInfo?userInfo.user_nickname:"null"}}</div>
+          <div>{{userInfo?userInfo.nickname:"null"}}</div>
         </div>
       </div>
       <div class="extrainfo-wrapper">
@@ -22,14 +22,14 @@
         </ul>
       </div>
     </div>
-    <button @click="checkLogin">log in?</button>
-    <button @click="setpwd">setpwd</button>
+<!--     <button @click="checkLogin">log in?</button>
+    <button @click="setpwd">setpwd</button> -->
     <div v-show="showLogin||showRegister||showForgetPwd" class="shadow"></div>
     <div class="register-login-wrapper">
       <login v-show="showLogin" @close="$store.commit('SET_SHOWLOGIN',false)" @register="showRegister=true" @forgetPwd="showForgetPwd=true"></login>
       <register v-show="showRegister" @close="showRegister=false" @login="$store.commit('SET_SHOWLOGIN',true)"></register>
-      <forget-password v-show="showForgetPwd" @close="showForgetPwd=false" @validateSuccess="showSetPwd=true"></forget-password>
-      <set-password v-show="showSetPwd" @close="showSetPwd=false"></set-password>
+      <forget-password v-show="showForgetPwd" @close="showForgetPwd=false" @validateSuccess="validateSuccessHandler"></forget-password>
+      <set-password v-show="showSetPwd" @close="showSetPwd=false" :credential="setPwdCredential"></set-password>
     </div>
   </div>
 </template>
@@ -52,6 +52,7 @@ export default {
       showRegister: false,
       showForgetPwd: false,
       showSetPwd: false,
+      setPwdCredential:null
       // extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
     }
   },
@@ -60,12 +61,18 @@ export default {
       let vm=this
       this.$axios.post('public/logout').then(function(data) {
         vm.$store.commit('SET_USERINFO',null)
+        vm.$store.commit('SET_STATUS',"offLine")
       })
     },
     checkLogin() {
       this.$axios.post('public/islogin').then(function(data) {
         // console.log(data)
       })
+    },
+    validateSuccessHandler(credential){
+      console.log('credential',credential)
+      this.showSetPwd=true
+      this.setPwdCredential=credential
     },
     setpwd(){
       
@@ -77,6 +84,9 @@ export default {
     },
     showLogin(){
       return this.$store.state.showLogin
+    },
+    status(){
+      return this.$store.state.status
     }
   },
   components: {

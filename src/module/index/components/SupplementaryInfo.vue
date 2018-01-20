@@ -14,8 +14,8 @@
           </el-form-item>
           <el-form-item label="性别">
             <el-radio-group v-model="form.gender">
-              <el-radio label="0">男</el-radio>
-              <el-radio label="1">女</el-radio>
+              <el-radio :label=0>男</el-radio>
+              <el-radio :label=1>女</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="出生日期">
@@ -63,9 +63,8 @@
         </div>
       </div>
     </div>
-    <div class="footer">
-      <el-alert title="完善资料内容7个,获得赠送额度10;完善资料内容10个,获得赠送额度15" type="warning" show-icon center></el-alert>
-    </div>
+    <el-alert :title="modifyMsg" type="success" show-icon v-show="modifyMsg"></el-alert>
+    <el-alert title="完善资料内容4个,获得赠送额度10;完善资料内容8个,获得赠送额度15" type="warning" show-icon></el-alert>
   </div>
 </template>
 <script type="text/javascript">
@@ -74,14 +73,25 @@ export default {
     return {
       form: {
         name: '',
-        gener: '',
+        gender: '',
         birthdate: '',
         residence: [],
         postcode: '',
         education: '',
         monthlyIncome: '',
-        telephone:''
+        telephone: ''
       },
+      /*      form: {
+              name: 'wenda',
+              gender: 1,
+              birthdate: '1995-05-11',
+              residence: ['ZheJiang', 'HangZhou', 'BinJiang'],
+              postcode: '123123',
+              monthlyIncome: '3000',
+              telephone: '13123123123',
+              education: 1
+
+            },*/
       showTips: true,
       secureInfo: {
         nickname: 'yunyou',
@@ -107,23 +117,66 @@ export default {
       }],
       educationLevel: [{
         label: '本科',
-        value:0
+        value: 0
       }, {
         label: '研究生',
-        value:1
+        value: 1
       }, {
         label: '大专',
-        value:2
+        value: 2
       }, {
         label: '大专以下',
-        value:3
-      }]
+        value: 3
+      }],
+      modifyMsg: ""
     }
   },
-  methods:{
-    onSubmit(){
-      console.log(this.form)
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo
     }
+  },
+  methods: {
+    onSubmit() {
+      /*      console.log({
+              user_id:this.userInfo.userid,
+              ...this.form,
+              residence:this.form.residence.join('/')
+            })*/
+      let vm = this
+      this.$axios.post('user/addUserInfo', {
+        user_id: this.userInfo.userid,
+        name: this.form.name,
+        sex: this.form.gender,
+        birthdate: this.form.birthdate,
+        telephone: this.form.telephone,
+        address: this.form.residence.join('/'),
+        postcode: this.form.postcode,
+        education: this.form.education,
+        monthlyIncome: this.form.monthlyIncome
+      }).then(function({ data }) {
+        vm.modifyMsg = data.str
+
+      })
+    }
+  },
+  mounted() {
+    let vm = this
+    this.$axios.post('user/getUserSupplementaryInfo', {
+      user_id: this.userInfo.userid
+    }).then(function({ data }) {
+      let info = data.data
+      vm.form = {
+        name: info.name,
+        gender: info.sex,
+        birthdate: info.birthdate,
+        telephone: info.telephone,
+        residence: info.address.split('/'),
+        postcode: info.postcode,
+        education: info.education,
+        monthlyIncome: info.monthlyIncome
+      }
+    })
   }
 }
 
@@ -134,7 +187,8 @@ export default {
 }
 
 .content {
-  padding-right: 50%;
+  /*padding-right: 50%;*/
+  width: 400px;
 }
 
 .secureInfo-wrapper {
@@ -142,14 +196,15 @@ export default {
   font-size: 15px;
   color: #5a5e66
 }
+
 .secureInfo-wrapper .item {
   margin-bottom: 10px;
 }
 
 .footer {
-  width: 90%;
-  position: absolute;
-  bottom: 10%;
+  /*width: 400px;*/
+  /*position: absolute;*/
+  /*bottom: 10%;*/
 }
 
 </style>

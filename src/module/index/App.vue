@@ -31,6 +31,19 @@ export default {
     studentInfo,
     specialRecommend,
     categorySelector
+  },
+  mounted(){
+    let vm=this
+    this.$axios.post('/public/islogin').then(function({data}){
+      if(data.code===0){
+        vm.$store.commit("SET_STATUS",'onLine')
+        vm.$axios.post('user/getUserInfoById',{
+          user_id:data.data.userid
+        }).then(function({data}){
+          vm.$store.commit('SET_USERINFO',data.data)
+        })
+      }
+    })
   }
 }
 </script>

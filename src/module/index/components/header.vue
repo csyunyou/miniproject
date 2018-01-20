@@ -9,8 +9,8 @@
       </div>
     </div>
     <div class="explore-wrapper">
-      <el-input placeholder="请输入内容" v-model="searchInput" class="explore-btn" @change="filter">
-        <el-select v-model="type" slot="prepend" placeholder="请选择" class="typeSelector">
+      <el-input placeholder="请输入内容" v-model="searchInput" class="explore-btn">
+        <el-select v-model="type" slot="prepend" placeholder="视屏类型" class="typeSelector">
           <el-option label="视屏" :value="0"></el-option>
           <el-option label="直播" :value="1"></el-option>
         </el-select>
@@ -41,12 +41,19 @@ export default {
   },
   methods: {
     searchBtnClickHandler() {
+      // console.log(this.type,this.searchInput)
+      // this.$store.commit(this.type===0?'SET_VOD_SEARCH_KEYWORD':'SET_VOD_SEARCH_KEYWORD',this.searchInput)
       this.$router.push({
         path: this.type === 0 ? "/vodList" : "/livebroadcastList",
-        query: { keyword: this.searchInput }
+        query: { keyword: this.searchInput,isFirst:this.isFirstSearch}
       })
     }
 
+  },
+  computed:{
+    isFirstSearch(){
+      return this.$store.state.isFirstSearch
+    }
   }
 }
 
@@ -92,7 +99,7 @@ export default {
 }
 
 .explore-btn {
-  width: 50%;
+  width: 400px;
   position: absolute;
   top: 50%;
   left: 40%;

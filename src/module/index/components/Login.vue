@@ -35,76 +35,91 @@ import axios from 'axios'
 import verification from 'verification-code';
 export default {
   data() {
-    return {
-      loginForm: {
-        account: "",
-        password: "",
-        verificationCode: "",
-        autoLogin: false,
-      },
-      warningInfo: "",
-      rules: {
-        account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        verificationCode: [{ validator: this.verificationCodeValidator, trigger: 'blur' }]
-      },
-      verification: null
-    }
-  },
-  methods: {
-    login() {
-      let vm = this
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.$axios.post('public/login', {
-            mobile: this.loginForm.account,
-            password: this.loginForm.password
-          }).then(function({ data }) {
-            if (data.code === 1) {
-              vm.$store.commit('SET_USERINFO',data.data)
-              vm.$emit("close")
-              vm.$router.push({path:'/'})
-            } else {
-              vm.warningInfo = data.message
-            }
-          })
-        } else {
-          console.log('erro')
-          return false;
-        }
-      })
+      return {
+        loginForm: {
+          account: "",
+          password: "",
+          verificationCode: "",
+          autoLogin: false,
+        },
+        warningInfo: "",
+        rules: {
+          account: [{
+            required: true,
+            message: '请输入账号',
+            trigger: 'blur'
+          }],
+          password: [{
+            required: true,
+            message: '请输入密码',
+            trigger: 'blur'
+          }],
+          verificationCode: [{
+            validator: this.verificationCodeValidator,
+            trigger: 'blur'
+          }]
+        },
+        verification: null
+      }
+    },
+    methods: {
+      login() {
+        let vm = this
+        this.$refs.loginForm.validate((valid) => {
+          if (valid) {
+            this.$axios.post('public/login', {
+              mobile: this.loginForm.account,
+              password: this.loginForm.password
+            }).then(function({
+              data
+            }) {
+              if (data.code === 1) {
+                vm.$store.commit('SET_STATUS','onLine')
+                vm.$store.commit('SET_USERINFO', data.data)
+                vm.$emit("close")
+                vm.$router.push({
+                  path: '/'
+                })
+              } else {
+                vm.warningInfo = data.str
+              }
+            })
+          } else {
+            console.log('erro')
+            return false;
+          }
+        })
 
+      },
+      turn2Register() {
+        this.$emit("close")
+        this.$emit("register")
+      },
+      turn2ForgetPwd() {
+        this.$emit("close")
+        this.$emit("forgetPwd")
+      },
+      changeVerification() {
+        this.verification = verification.create();
+        console.log(this.verification.code)
+      },
+      verificationCodeValidator(rule, val, cb) {
+        if (val === "")
+          cb(new Error('请输入验证码'));
+        else if (val.toLowerCase() !== this.verification.code)
+          cb(new Error('验证码不正确'));
+        else
+          cb();
+      }
     },
-    turn2Register() {
-      this.$emit("close")
-      this.$emit("register")
-    },
-    turn2ForgetPwd() {
-      this.$emit("close")
-      this.$emit("forgetPwd")
-    },
-    changeVerification() {
+    created() {
       this.verification = verification.create();
-      console.log(this.verification.code)
+
     },
-    verificationCodeValidator(rule, val, cb) {
-      if (val === "")
-        cb(new Error('请输入验证码'));
-      else if (val.toLowerCase() !== this.verification.code)
-        cb(new Error('验证码不正确'));
-      else
-        cb();
+    mounted() {
+      // console.log(this.verification.code, this.verification.dataURL, "mounted")
     }
-  },
-  created() {
-    this.verification = verification.create();
-
-  },
-  mounted() {
-    // console.log(this.verification.code, this.verification.dataURL, "mounted")
-  }
 }
-
 </script>
 <style type="text/css" scoped>
 .login {
@@ -158,5 +173,4 @@ export default {
   vertical-align: top;
   margin-left: 10px;
 }
-
 </style>

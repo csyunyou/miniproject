@@ -3,24 +3,24 @@
     <div class="proceed-list-wrapper">
       <div class="proceed-list">
         <div class="title">直播中</div>
-        <el-table :data="proceedInfo.tableData.slice((proceedInfo.currentPage-1)*proceedInfo.pageSize,(proceedInfo.currentPage-1)*proceedInfo.pageSize+proceedInfo.pageSize)" stripe style="width: 100%" @row-click="rowClickHandler">
+        <el-table :data="tableData" stripe style="width: 100%" @row-click="rowClickHandler">
           <el-table-column prop="title" label="标题" width="180">
           </el-table-column>
-          <el-table-column prop="date" label="时间" width="180">
-          </el-table-column>
+          <!--           <el-table-column prop="date" label="时间" width="180">
+          </el-table-column> -->
           <el-table-column prop="speaker" label="主讲人">
           </el-table-column>
-          <el-table-column prop="place" label="地点">
-          </el-table-column>
+          <!--           <el-table-column prop="place" label="地点">
+          </el-table-column> -->
         </el-table>
       </div>
       <div class="pageControl">
-        <el-pagination :current-page.sync="proceedInfo.currentPage" :page-size="proceedInfo.pageSize" layout="total, prev, pager, next" :total="proceedInfo.tableData.length">
+        <el-pagination :current-page.sync="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="tableData.length">
         </el-pagination>
       </div>
     </div>
     <div class="division"></div>
-    <div class="end-list-wrapper">
+    <!--     <div class="end-list-wrapper">
       <div class="end-list">
         <div class="title">已结束</div>
         <el-table :data="endInfo.tableData.slice((endInfo.currentPage-1)*endInfo.pageSize,(endInfo.currentPage-1)*endInfo.pageSize+endInfo.pageSize)" stripe style="width: 100%">
@@ -38,65 +38,85 @@
         <el-pagination :current-page.sync="endInfo.currentPage" :page-size="endInfo.pageSize" layout="total, prev, pager, next" :total="endInfo.tableData.length">
         </el-pagination>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script type="text/javascript">
 export default {
   data() {
     return {
-      proceedInfo: {
-        currentPage: 1,
-        pageSize: 3,
-        tableData: []
-      },
-      endInfo: {
-        currentPage: 1,
-        pageSize: 3,
-        tableData: []
-      }
+      /*      proceedInfo: {
+              currentPage: 1,
+              pageSize: 3,
+              tableData: []
+            },
+            endInfo: {
+              currentPage: 1,
+              pageSize: 3,
+              tableData: []
+            }*/
+      currentPage: 0,
+      pageSize: 3,
+      tableData: []
+    }
+  },
+  computed:{
+    userInfo(){
+      return this.$store.state.userInfo
     }
   },
   methods: {
     rowClickHandler(row, evt, col) {
+      this.$axios.post('user/addRecord', {
+        user_id: this.userInfo.userid,
+        video_id: row.id,
+        type: "live"
+      })
       this.$router.push({ path: `/videoPlayer`, query: { id: `${row.id}`, type: 'live' } })
     }
   },
   mounted() {
-    let rand
-    for (let i = 0; i < 10; i++) {
-      if (i/ 5 <1) {
-        this.proceedInfo.tableData.push({
-          title: "和平与战争",
-          date: "2016-10-11",
-          speaker: "云游",
-          place: "杭州西湖区",
-          id:1
-        })
-        this.endInfo.tableData.push({
-          title: "如何高效地学习",
-          date: "2016-03-01",
-          speaker: "旋律",
-          place: "杭州余杭区",
-          id:2
-        })
-      } else {
-        this.proceedInfo.tableData.push({
-          title: "编程之美",
-          date: "2016-03-01",
-          speaker: "旋律",
-          place: "杭州余杭区",
-          id:3
-        })
-        this.endInfo.tableData.push({
-          title: "数学之美",
-          date: "2016-10-11",
-          speaker: "云游",
-          place: "杭州西湖区",
-          id:4
-        })
-      }
-    }
+    let vm = this
+    this.$axios.post('index/getAllVideo', {
+      type: 1,
+      page: this.currentPage
+    }).then(function({ data }) {
+      vm.tableData = data.data
+    })
+    /*    let rand
+        for (let i = 0; i < 10; i++) {
+          if (i/ 5 <1) {
+            this.proceedInfo.tableData.push({
+              title: "和平与战争",
+              date: "2016-10-11",
+              speaker: "云游",
+              place: "杭州西湖区",
+              id:1
+            })
+            this.endInfo.tableData.push({
+              title: "如何高效地学习",
+              date: "2016-03-01",
+              speaker: "旋律",
+              place: "杭州余杭区",
+              id:2
+            })
+          } else {
+            this.proceedInfo.tableData.push({
+              title: "编程之美",
+              date: "2016-03-01",
+              speaker: "旋律",
+              place: "杭州余杭区",
+              id:3
+            })
+            this.endInfo.tableData.push({
+              title: "数学之美",
+              date: "2016-10-11",
+              speaker: "云游",
+              place: "杭州西湖区",
+              id:4
+            })
+          }
+        }*/
   }
 }
 

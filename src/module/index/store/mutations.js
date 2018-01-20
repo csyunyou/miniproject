@@ -7,5 +7,17 @@ export default{
 	},*/
 	SET_SHOWLOGIN:function(state,showLogin){
 		state.showLogin=showLogin
+	},
+/*	SET_VOD_SEARCH_KEYWORD:function(state,keyword){
+		state.vodSearchKeyword=keyword
+	},
+	SET_LIVE_SEARCH_KEYWORD:function(state,keyword){
+		state.liveSearchKeyword=keyword
+	},*/
+	SET_IS_FIRST_SEARCH:function(state,isFirst){
+		state.isFirstSearch=isFirst
+	},
+	SET_STATUS(state,status){
+		state.status=status
 	}
 }

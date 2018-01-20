@@ -21,15 +21,21 @@ export default {
   data() {
     return {
       balance: 0,
-      award: 100
+      award: 0
+    }
+  },
+  computed:{
+    userInfo(){
+      return this.$store.state.userInfo
     }
   },
   mounted() {
     let vm=this
-    this.$axios.post('User/islogin').then(function({ data }) {
-      if (data.code === "1000") {
-        vm.$store.commit("SET_USERINFO",data.data)
-      }
+    this.$axios.post('User/getWallet',{
+      user_id:this.$store.state.userInfo.userid
+    }).then(({ data })=>{
+      this.balance=+data.data.balance
+      this.award=+data.data.award
     })
   }
 }
@@ -47,11 +53,9 @@ export default {
 .balance-wrapper,
 .award-wrapper {
   display: inline-block;
+  width:200px;
 }
 
-.balance-wrapper {
-  width: 25%;
-}
 
 .award-wrapper {
   margin-left: 20px;
