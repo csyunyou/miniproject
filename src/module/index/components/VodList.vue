@@ -21,17 +21,17 @@ export default {
     userInfo() {
       return this.$store.state.userInfo
     },
-/*    keyword() {
-      return this.$store.state.vodSearchKeyword
-    }*/
+    keyword() {
+      return this.$store.state.vodKeyword
+    }
   },
   data() {
     return {
       tableData: [],
       currentPage: 1,
       pageSize: 3,
-      keyword:null,
-      totalCount:0
+      // keyword:null,
+      totalCount: 0
     }
   },
   methods: {
@@ -56,11 +56,11 @@ export default {
       this.$axios.post('index/getAllVideo', {
         type: 2,
         page: this.currentPage - 1,
-        keyword:this.keyword,
-        pageSize:this.pageSize
+        keyword: this.keyword,
+        pageSize: this.pageSize
       }).then(({ data }) => {
         this.tableData = data.data
-        this.totalCount=+data.count
+        this.totalCount = +data.count
         /*      if (this.$route.query.keyword)
                 this.tableData = this.tableData.filter(function(d) {
                   return d.title.indexOf(vm.$route.query.keyword) !== -1 || d.speaker.indexOf(vm.$route.query.keyword) !== -1;
@@ -69,26 +69,29 @@ export default {
     }
   },
   watch: {
-    currentPage(){
+    currentPage() {
+      this.getAllVideo()
+    },
+    keyword(val) {
       this.getAllVideo()
     }
     // keyword(val) {
     //   this.getAllVideo(val)
     // }
   },
-  beforeRouteUpdate(to) {
-    // console.log('update', to)
-    this.keyword = to.query.keyword
-    this.getAllVideo()
-  },
+  /*  beforeRouteUpdate(to) {
+      // console.log('update', to)
+      this.keyword = to.query.keyword
+      this.getAllVideo()
+    },*/
   beforeRouteLeave(to, from, next) {
-    this.$store.commit('SET_IS_FIRST_SEARCH', true)
+    this.$store.commit('SET_VOD_KEYWORD', null)
     next()
   },
   mounted() {
     console.log('vod mounted')
-    this.$store.commit('SET_IS_FIRST_SEARCH', false)
-    this.keyword = this.$route.query.keyword
+    // this.$store.commit('SET_IS_FIRST_SEARCH', false)
+    // this.keyword = this.$route.query.keyword
     this.getAllVideo()
     /*    let rand, vm = this
         for (let i = 0; i < 10; i++) {

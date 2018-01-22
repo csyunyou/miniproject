@@ -14,8 +14,8 @@
           </el-form-item>
           <el-form-item label="性别">
             <el-radio-group v-model="form.gender">
-              <el-radio :label=0>男</el-radio>
-              <el-radio :label=1>女</el-radio>
+              <el-radio :label=1>男</el-radio>
+              <el-radio :label=2>女</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="出生日期">
@@ -64,7 +64,7 @@
       </div>
     </div>
     <el-alert :title="modifyMsg" type="success" show-icon v-show="modifyMsg"></el-alert>
-    <el-alert title="完善资料内容4个,获得赠送额度10;完善资料内容8个,获得赠送额度15" type="warning" show-icon></el-alert>
+    <el-alert title="完善资料内容4个,获得赠送额度5;完善资料内容8个,获得赠送额度10" type="warning" show-icon></el-alert>
   </div>
 </template>
 <script type="text/javascript">
@@ -144,6 +144,7 @@ export default {
               residence:this.form.residence.join('/')
             })*/
       let vm = this
+      console.log(this.form)
       this.$axios.post('user/addUserInfo', {
         user_id: this.userInfo.userid,
         name: this.form.name,
@@ -168,13 +169,13 @@ export default {
       let info = data.data
       vm.form = {
         name: info.name,
-        gender: info.sex,
+        gender: +info.sex,
         birthdate: info.birthdate,
         telephone: info.telephone,
         residence: info.address.split('/'),
         postcode: info.postcode,
-        education: info.education,
-        monthlyIncome: info.monthlyIncome
+        education: +info.education,
+        monthlyIncome: info.monthlyincome
       }
     })
   }

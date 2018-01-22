@@ -42,10 +42,11 @@ export default {
   methods: {
     searchBtnClickHandler() {
       // console.log(this.type,this.searchInput)
-      // this.$store.commit(this.type===0?'SET_VOD_SEARCH_KEYWORD':'SET_VOD_SEARCH_KEYWORD',this.searchInput)
+      this.$store.commit(this.type===0?'SET_VOD_KEYWORD':'SET_LIVE_KEYWORD',this.searchInput)
+      // this.$store.commit('')
       this.$router.push({
         path: this.type === 0 ? "/vodList" : "/livebroadcastList",
-        query: { keyword: this.searchInput,isFirst:this.isFirstSearch}
+        // query: { keyword: this.searchInput,isFirst:this.isFirstSearch}
       })
     }
 

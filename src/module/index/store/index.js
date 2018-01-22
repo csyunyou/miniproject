@@ -13,7 +13,9 @@ const state = {
 /*	vodSearchKeyword:null,
 	liveSearchKeyword:null*/
 	isFirstSearch:true,
-	status:"offLine"
+	status:"offLine",
+	liveKeyword:null,
+	vodKeyword:null
 };
 export default new Vuex.Store({
   state,

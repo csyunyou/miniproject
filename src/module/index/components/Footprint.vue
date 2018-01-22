@@ -78,7 +78,7 @@ export default {
       radius: 70,
       categoryColorMap: ['#7fc97f', '#beaed4', '#fdc086'],
       currentPage: 1,
-      pageSize: 2,
+      pageSize: 4,
       totalCount:0,
     }
   },
@@ -188,6 +188,11 @@ export default {
                         })
                 }*/
     let vm=this
+    this.$axios.post('user/getRecordCategoryCount',{
+      user_id:this.userInfo.userid
+    }).then(({data})=>{
+      
+    })
     this.$axios.post('user/getAllRecords', {
       user_id: this.userInfo.userid,
       page: this.currentPage - 1,

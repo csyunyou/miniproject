@@ -3,7 +3,7 @@
     <div class="proceed-list-wrapper">
       <div class="proceed-list">
         <div class="title">直播中</div>
-        <el-table :data="tableData" stripe style="width: 100%" @row-click="rowClickHandler">
+        <el-table :data="proceedInfo.tableData" stripe style="width: 100%" @row-click="rowClickHandler">
           <el-table-column prop="title" label="标题" width="180">
           </el-table-column>
           <!--           <el-table-column prop="date" label="时间" width="180">
@@ -15,56 +15,57 @@
         </el-table>
       </div>
       <div class="pageControl">
-        <el-pagination :current-page.sync="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="tableData.length">
+        <el-pagination :current-page.sync="proceedInfo.currentPage" :page-size="proceedInfo.pageSize" layout="total, prev, pager, next" :total="proceedInfo.totalCount" @current-change="proccedPageHanler">
         </el-pagination>
       </div>
     </div>
     <div class="division"></div>
-    <!--     <div class="end-list-wrapper">
+    <div class="end-list-wrapper">
       <div class="end-list">
         <div class="title">已结束</div>
-        <el-table :data="endInfo.tableData.slice((endInfo.currentPage-1)*endInfo.pageSize,(endInfo.currentPage-1)*endInfo.pageSize+endInfo.pageSize)" stripe style="width: 100%">
+        <el-table :data="endInfo.tableData" stripe style="width: 100%">
           <el-table-column prop="title" label="标题" width="180">
           </el-table-column>
-          <el-table-column prop="date" label="时间" width="180">
-          </el-table-column>
+          <!--           <el-table-column prop="date" label="时间" width="180">
+          </el-table-column> -->
           <el-table-column prop="speaker" label="主讲人">
           </el-table-column>
-          <el-table-column prop="place" label="地点">
-          </el-table-column>
+          <!--           <el-table-column prop="place" label="地点">
+          </el-table-column> -->
         </el-table>
       </div>
       <div class="pageControl">
-        <el-pagination :current-page.sync="endInfo.currentPage" :page-size="endInfo.pageSize" layout="total, prev, pager, next" :total="endInfo.tableData.length">
+        <el-pagination :current-page.sync="endInfo.currentPage" :page-size="endInfo.pageSize" layout="total, prev, pager, next" :total="endInfo.totalCount" @current-change="endPageHanler">
         </el-pagination>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 <script type="text/javascript">
 export default {
   data() {
     return {
-      /*      proceedInfo: {
-              currentPage: 1,
-              pageSize: 3,
-              tableData: []
-            },
-            endInfo: {
-              currentPage: 1,
-              pageSize: 3,
-              tableData: []
-            }*/
-      tableData: [],
-      currentPage: 1,
-      pageSize: 3,
-      keyword:null,
-      totalCount:0
+      proceedInfo: {
+        currentPage: 1,
+        pageSize: 3,
+        tableData: [],
+        totalCount: 0
+      },
+      endInfo: {
+        currentPage: 1,
+        pageSize: 3,
+        tableData: [],
+        totalCount: 0
+      },
+      // keyword: null
     }
   },
-  computed:{
-    userInfo(){
+  computed: {
+    userInfo() {
       return this.$store.state.userInfo
+    },
+    keyword() {
+      return this.$store.state.liveKeyword
     }
   },
   methods: {
@@ -75,16 +76,71 @@ export default {
         type: "live"
       })
       this.$router.push({ path: `/videoPlayer`, query: { id: `${row.id}`, type: 'live' } })
+    },
+    getAllProceedVideo() {
+      // console.log(this.$route.query.keyword)
+      // console.log(keyword)
+      let vm = this
+      this.$axios.post('index/getAllVideo', {
+        type: 1,
+        page: this.proceedInfo.currentPage - 1,
+        keyword: this.keyword,
+        pageSize: this.proceedInfo.pageSize,
+        play_state: 1
+      }).then(({ data }) => {
+        this.proceedInfo.tableData = data.data
+        this.proceedInfo.totalCount = +data.count
+      })
+    },
+    getAllEndVideo() {
+      // console.log(this.$route.query.keyword)
+      // console.log(keyword)
+      let vm = this
+      this.$axios.post('index/getAllVideo', {
+        type: 1,
+        page: this.endInfo.currentPage - 1,
+        keyword: this.keyword,
+        pageSize: this.endInfo.pageSize,
+        play_state: 2
+      }).then(({ data }) => {
+        this.endInfo.tableData = data.data
+        this.endInfo.totalCount = +data.count
+      })
+    },
+    proccedPageHanler(page) {
+      this.getAllProceedVideo()
+    },
+    endPageHanler(page) {
+      this.getAllEndVideo()
     }
   },
+  watch: {
+    keyword(val) {
+      this.getAllProceedVideo()
+      this.getAllEndVideo()
+
+    }
+  },
+  /*  watch: {
+      proceedInfo.currentPage() {
+        this.getAllProceedVideo()
+      }
+    },*/
+  /*  beforeRouteUpdate(to) {
+      // console.log('update', to)
+      this.keyword = to.query.keyword
+      this.getAllProceedVideo()
+    },*/
+  beforeRouteLeave(to, from, next) {
+    this.$store.commit('SET_LIVE_KEYWORD', null)
+    next()
+  },
   mounted() {
-    let vm = this
-    this.$axios.post('index/getAllVideo', {
-      type: 1,
-      page: this.currentPage
-    }).then(function({ data }) {
-      vm.tableData = data.data
-    })
+    /*    let vm = this
+        this.$store.commit('SET_IS_FIRST_SEARCH', false)
+        this.keyword = this.$route.query.keyword*/
+    this.getAllProceedVideo()
+    this.getAllEndVideo()
     /*    let rand
         for (let i = 0; i < 10; i++) {
           if (i/ 5 <1) {

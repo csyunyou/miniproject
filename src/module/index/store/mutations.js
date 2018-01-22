@@ -14,10 +14,17 @@ export default{
 	SET_LIVE_SEARCH_KEYWORD:function(state,keyword){
 		state.liveSearchKeyword=keyword
 	},*/
-	SET_IS_FIRST_SEARCH:function(state,isFirst){
+/*	SET_IS_FIRST_SEARCH:function(state,isFirst){
+		console.log('commit first:',isFirst)
 		state.isFirstSearch=isFirst
-	},
+	},*/
 	SET_STATUS(state,status){
 		state.status=status
+	},
+	SET_LIVE_KEYWORD:function(state,keyword){
+		state.liveKeyword=keyword
+	},
+	SET_VOD_KEYWORD:function(state,keyword){
+		state.vodKeyword=keyword
 	}
 }
