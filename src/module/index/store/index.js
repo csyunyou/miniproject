@@ -15,7 +15,9 @@ const state = {
 	isFirstSearch:true,
 	status:"offLine",
 	liveKeyword:null,
-	vodKeyword:null
+	vodKeyword:null,
+	selectedCategory:null,
+	selectedVideo:null
 };
 export default new Vuex.Store({
   state,

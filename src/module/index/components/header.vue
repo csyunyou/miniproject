@@ -62,7 +62,7 @@ export default {
 <style type="text/css" scoped>
 .header {
   border-bottom: 9px solid #ef3b2c;
-  flex: 0 0 7em;
+  height:120px;
   display: flex;
   position: relative;
 }

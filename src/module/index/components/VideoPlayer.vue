@@ -59,19 +59,22 @@ export default {
   computed: {
     QRCode() {
       return jrQrcode.getQrBase64(this.shareLink, { width: 120, height: 120 })
+    },
+    selectedVideo(){
+      return this.$store.state.selectedVideo
     }
   },
   mounted() {
     console.log('mounted')
     // console.log(this.$route.query.id)
     this.videoPlayer = videojs('video-player', this.videoOpts)
-    if (this.$route.query.type === "vod") {
+    if (/*this.$route.query.type === "vod"*/this.selectedVideo.type===2) {
       this.videoInfo = {
         title: "如何高效地学习",
         date: "2016-03-01",
         speaker: "旋律",
         link: "http://http://192.168.155.1:3001/video/testmp4.mp4",
-        id: 4
+        id: this.selectedVideo.id
       }
       this.videoPlayer.src({ type: 'video/mp4', src: this.videoInfo.link })
     } else {

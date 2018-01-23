@@ -1,2 +1,1 @@
-let f="44.212"
-console.log(+f)
+console.log(176*4+10)

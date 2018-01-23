@@ -79,12 +79,17 @@ export default {
       categoryColorMap: ['#7fc97f', '#beaed4', '#fdc086'],
       currentPage: 1,
       pageSize: 4,
-      totalCount:0,
+      totalCount: 0,
     }
   },
   computed: {
     userInfo() {
       return this.$store.state.userInfo
+    }
+  },
+  watch:{
+    currentPage(){
+      this.getAllRecords()
     }
   },
   methods: {
@@ -103,7 +108,7 @@ export default {
 
       //Slice
       var pie = d3.pie().value(function(d) {
-        return d.value;
+        return d.count;
       });
       var arc = d3.arc()
         .outerRadius(this.radius * 0.7)
@@ -135,7 +140,7 @@ export default {
           return midAngle(d) < Math.PI ? "start" : "end";
         })
         .text(function(d) {
-          return d.data.label;
+          return d.data.category_title;
         });
 
       //PolyLine
@@ -151,6 +156,17 @@ export default {
         .attr("stoke-width", "3px")
         .attr("opacity", ".3")
 
+    },
+    getAllRecords() {
+      let vm=this
+      this.$axios.post('user/getAllRecords', {
+        user_id: this.userInfo.userid,
+        page: this.currentPage - 1,
+        pageSize: this.pageSize
+      }).then(function({ data }) {
+        vm.tableData = data.data
+        vm.totalCount = +data.count
+      })
     },
     pieDataAdapter(data) {
       let categoryGroup = _.countBy(data, 'category_title'),
@@ -187,24 +203,14 @@ export default {
                             type: "直播"
                         })
                 }*/
-    let vm=this
-    this.$axios.post('user/getRecordCategoryCount',{
-      user_id:this.userInfo.userid
-    }).then(({data})=>{
-      
+    let vm = this
+    this.$axios.post('user/getRecordCategoryCount', {
+      user_id: this.userInfo.userid
+    }).then(({ data }) => {
+      this.pieData = data.data
+      vm.drawPieChart()
     })
-    this.$axios.post('user/getAllRecords', {
-      user_id: this.userInfo.userid,
-      page: this.currentPage - 1,
-      pageSize: this.pageSize
-    }).then(function({data}) {
-        vm.tableData=data.data
-        vm.totalCount=+data.count
-        vm.pieData = vm.pieDataAdapter(vm.tableData)
-        vm.drawPieChart()
-    
-    })
-
+    this.getAllRecords()
   }
 }
 

@@ -1,18 +1,39 @@
 <template>
-  <div class="vodList">
-    <div class="title">视屏</div>
+  <div class="vodList" ref="vodList">
+    <!--     <div class="title">视屏</div>
     <el-table :data="tableData" stripe style="width: 100%" @row-click="rowClickHandler">
       <el-table-column prop="title" label="标题" width="180">
       </el-table-column>
-      <!--       <el-table-column prop="date" label="时间" width="180">
-      </el-table-column> -->
       <el-table-column prop="speaker" label="主讲人">
       </el-table-column>
-    </el-table>
+    </el-table>-->
+    <div class="video-list">
+      <div v-for="video in tableData" class="video" :style="videoStyle" @click="itemClickHandler(video)">
+        <img src="../../../assets/videoDefualt.jpg" height="120" width="200">
+        <div class="content">
+          <div class="description">
+            <span>{{video.title}}</span>
+            <span>{{video.speaker}}</span>
+          </div>
+          <div class="price">123元</div>
+        </div>
+      </div>
+    </div>
     <div class="pageControl">
       <el-pagination :current-page.sync="currentPage" :page-size="pageSize" layout="total, prev, pager, next" :total="totalCount">
       </el-pagination>
     </div>
+    <!--     <div v-for="row in rowNum" class="row">
+      <div v-for="column in columnNum" class="column video">
+        <img src="../../../assets/videoDefualt.jpg" />
+        <div class="content">
+          <div class="description">
+            <span>some Text</span>
+          </div>
+          <div class="price">123元</div>
+        </div>
+      </div>
+    </div> -->
   </div>
 </template>
 <script type="text/javascript">
@@ -23,18 +44,51 @@ export default {
     },
     keyword() {
       return this.$store.state.vodKeyword
+    },
+    colNum() {
+      return Math.floor(this.$refs.vodList.clientWidth / 200)
+    },
+    pageSize() {
+      return this.rowNum * this.columnNum
+    },
+    selectedCategory() {
+      return this.$store.state.selectedCategory
     }
   },
+  props: ["contentHeight"],
   data() {
     return {
       tableData: [],
       currentPage: 1,
-      pageSize: 3,
+      // pageSize: 10,
       // keyword:null,
-      totalCount: 0
+      totalCount: 0,
+      columnNum: 3,
+      rowNum: 4,
+      contentWidth: 0,
+      videoStyle: {
+        marginBottom: '10px',
+        marginRight: 0
+      }
     }
   },
   methods: {
+    itemClickHandler(video) {
+      console.log(video)
+      this.$axios.post('user/addRecord', {
+        user_id: this.userInfo.userid,
+        video_id: video.id,
+        type: "vod"
+      })
+      this.$router.push({
+        path: `/videoPlayer`,
+/*        query: {
+          id: `${video.id}`,
+          type: 'vod'
+        }*/
+      })
+      this.$store.commit('SET_SELECTED_VIDEO',video)
+    },
     rowClickHandler(row, evt, col) {
       this.$axios.post('user/addRecord', {
         user_id: this.userInfo.userid,
@@ -57,7 +111,8 @@ export default {
         type: 2,
         page: this.currentPage - 1,
         keyword: this.keyword,
-        pageSize: this.pageSize
+        pageSize: this.pageSize,
+        category_title: this.selectedCategory
       }).then(({ data }) => {
         this.tableData = data.data
         this.totalCount = +data.count
@@ -73,6 +128,9 @@ export default {
       this.getAllVideo()
     },
     keyword(val) {
+      this.getAllVideo()
+    },
+    selectedCategory(val) {
       this.getAllVideo()
     }
     // keyword(val) {
@@ -92,7 +150,13 @@ export default {
     console.log('vod mounted')
     // this.$store.commit('SET_IS_FIRST_SEARCH', false)
     // this.keyword = this.$route.query.keyword
+    // let rowNum=Math.floor(this.$refs.vodList.clientWidth/200)
+    console.log('pageSize:', this.pageSize, this.rowNum)
+    this.videoStyle.marginRight = (this.$refs.vodList.clientWidth - 200 * this.colNum) / this.colNum - 10 + 'px'
+    // this.videoStyle.mar
     this.getAllVideo()
+
+    // console.log(this.contentHeight,this.$refs.vodList.clientWidth)
     /*    let rand, vm = this
         for (let i = 0; i < 10; i++) {
           if (i /5 <1) {
@@ -135,7 +199,17 @@ export default {
 </script>
 <style type="text/css" scoped>
 .vodList {
-  margin: 20px;
+  /*margin: 20px;*/
+  padding: 10px;
+  /*height: 90%;*/
+  /*width: 100%;*/
+  /*flex-direction:column;*/
+  /*justify-content: space-between;*/
+}
+
+.video-list {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .title {
@@ -148,6 +222,20 @@ export default {
 .pageControl {
   text-align: right;
   margin-top: 10px;
+}
+
+.video {
+  flex: 0 0 auto;
+  /*margin-right: 5px;*/
+}
+
+.video .content {
+  background-color: white;
+}
+
+
+.description {
+  font-size: 12px;
 }
 
 </style>

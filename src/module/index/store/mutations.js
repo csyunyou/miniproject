@@ -26,5 +26,11 @@ export default{
 	},
 	SET_VOD_KEYWORD:function(state,keyword){
 		state.vodKeyword=keyword
+	},
+	SET_SELECTED_CATEGORY:function(state,category){
+		state.selectedCategory=category
+	},
+	SET_SELECTED_VIDEO:function(state,video){
+		state.selectedVideo=video
 	}
 }

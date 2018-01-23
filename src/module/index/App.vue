@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <v-header></v-header>
-    <div class="HolyGrail-body">
+    <div class="HolyGrail-body" ref="holyGrailBody">
       <main class="HolyGrail-content">
-        <router-view></router-view>
+        <router-view :contentHeight="holyGrailHeight"></router-view>
       </main>
       <nav class="HolyGrail-nav">
         <student-info></student-info>
@@ -32,18 +32,25 @@ export default {
     specialRecommend,
     categorySelector
   },
+  data(){
+    return{
+      holyGrailHeight:0
+    }
+  },
   mounted(){
     let vm=this
     this.$axios.post('/public/islogin').then(function({data}){
       if(data.code===0){
         vm.$store.commit("SET_STATUS",'onLine')
-        vm.$axios.post('user/getUserInfoById',{
+        vm.$axios.post('public/getUserInfoById',{
           user_id:data.data.userid
         }).then(function({data}){
           vm.$store.commit('SET_USERINFO',data.data)
         })
       }
     })
+    this.holyGrailHeight=this.$refs.holyGrailBody.clientHeight
+    // console.log(this.$refs.holyGrailBody.clientHeight,this.$refs.holyGrailBody.offsetHeight)
   }
 }
 </script>
@@ -54,16 +61,16 @@ export default {
   /*font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width:80%;
+  width:90%;
   margin:0 auto;
 /*
   text-align: center;
   color: #2c3e50;*/
   /*margin-top: 60px;*/
-  display: flex;
-  flex-direction: column;
+  /*display: flex;*/
+  /*flex-direction: column;*/
   /*border:1px solid black;*/
-  height: 950px;
+  /*height: 950px;*/
 }
 .HolyGrail-content .division{
   height: 10px;
@@ -71,7 +78,8 @@ export default {
 }
 .HolyGrail-body{
   display: flex;
-  flex:2;
+  /*flex:2;*/
+  height:770px;
 }
 .HolyGrail-content{
   flex:1;
@@ -82,7 +90,7 @@ export default {
 
 }
 .HolyGrail-nav,.HolyGrail-ads{
-  flex:0 0 15em;
+  flex:0 0 220px;
   background:#f0f0f0;
 }
 .HolyGrail-nav{
