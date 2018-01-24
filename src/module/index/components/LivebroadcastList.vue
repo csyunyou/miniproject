@@ -1,41 +1,55 @@
 <template>
-  <div class="livebroadcastList">
-    <div class="proceed-list-wrapper">
-      <div class="proceed-list">
-        <div class="title">直播中</div>
-        <el-table :data="proceedInfo.tableData" stripe style="width: 100%" @row-click="rowClickHandler">
+  <div class="livebroadcastList" ref="livebroadcastList">
+    <div class="proceed-list" ref="proceedList">
+      <div class="title">直播中</div>
+      <!--         <el-table :data="proceedInfo.tableData" stripe style="width: 100%" @row-click="rowClickHandler">
           <el-table-column prop="title" label="标题" width="180">
           </el-table-column>
-          <!--           <el-table-column prop="date" label="时间" width="180">
-          </el-table-column> -->
           <el-table-column prop="speaker" label="主讲人">
           </el-table-column>
-          <!--           <el-table-column prop="place" label="地点">
-          </el-table-column> -->
-        </el-table>
+        </el-table> -->
+      <div class="video-list">
+        <div v-for="(video,idx) in proceedInfo.tableData" class="video" :style="{'margin-right':(idx+1)%colNum===0?0:videoStyle.marginRight,'margin-bottom':videoStyle.marginBottom}" @click="itemClickHandler(video)">
+          <img :src="video.picture" height="120" width="200">
+          <!--width 200 height 120-->
+          <div class="content">
+            <div class="description">
+              <span>{{video.title}}</span>
+              <span>{{video.speaker}}</span>
+            </div>
+            <div class="price">123元</div>
+          </div>
+        </div>
       </div>
       <div class="pageControl">
-        <el-pagination :current-page.sync="proceedInfo.currentPage" :page-size="proceedInfo.pageSize" layout="total, prev, pager, next" :total="proceedInfo.totalCount" @current-change="proccedPageHanler">
+        <el-pagination :current-page.sync="proceedInfo.currentPage" :page-size="proceedPageSize" layout="total, prev, pager, next" :total="proceedInfo.totalCount" @current-change="proccedPageHanler">
         </el-pagination>
       </div>
     </div>
     <div class="division"></div>
-    <div class="end-list-wrapper">
-      <div class="end-list">
-        <div class="title">已结束</div>
-        <el-table :data="endInfo.tableData" stripe style="width: 100%">
+    <div class="end-list">
+      <div class="title">已结束</div>
+      <!--         <el-table :data="endInfo.tableData" stripe style="width: 100%">
           <el-table-column prop="title" label="标题" width="180">
           </el-table-column>
-          <!--           <el-table-column prop="date" label="时间" width="180">
-          </el-table-column> -->
           <el-table-column prop="speaker" label="主讲人">
           </el-table-column>
-          <!--           <el-table-column prop="place" label="地点">
-          </el-table-column> -->
-        </el-table>
+        </el-table> -->
+      <div class="video-list">
+        <div v-for="(video,idx) in endInfo.tableData" class="video" :style="{'margin-right':(idx+1)%colNum===0?0:videoStyle.marginRight,'margin-bottom':videoStyle.marginBottom}" @click="itemClickHandler(video)">
+          <img :src="video.picture" height="120" width="200">
+          <!--width 200 height 120-->
+          <div class="content">
+            <div class="description">
+              <span>{{video.title}}</span>
+              <span>{{video.speaker}}</span>
+            </div>
+            <div class="price">123元</div>
+          </div>
+        </div>
       </div>
       <div class="pageControl">
-        <el-pagination :current-page.sync="endInfo.currentPage" :page-size="endInfo.pageSize" layout="total, prev, pager, next" :total="endInfo.totalCount" @current-change="endPageHanler">
+        <el-pagination :current-page.sync="endInfo.currentPage" :page-size="endPageSize" layout="total, prev, pager, next" :total="endInfo.totalCount" @current-change="endPageHanler">
         </el-pagination>
       </div>
     </div>
@@ -47,25 +61,44 @@ export default {
     return {
       proceedInfo: {
         currentPage: 1,
-        pageSize: 3,
         tableData: [],
         totalCount: 0
       },
       endInfo: {
         currentPage: 1,
-        pageSize: 3,
         tableData: [],
         totalCount: 0
       },
+      columnNum: 3,
+      proceedRowNum: 2,
+      endRowNum: 1,
+      contentWidth: 0,
+      videoStyle: {
+        marginBottom: '10px',
+        marginRight: 0
+      }
       // keyword: null
     }
   },
+  props: ["contentHeight"],
   computed: {
     userInfo() {
       return this.$store.state.userInfo
     },
     keyword() {
       return this.$store.state.liveKeyword
+    },
+    colNum() {
+      return Math.floor(this.$refs.livebroadcastList.clientWidth / 200)
+    },
+    proceedPageSize() {
+      return this.proceedRowNum * this.columnNum
+    },
+    endPageSize() {
+      return this.endRowNum * this.columnNum
+    },
+    selectedCategory() {
+      return this.$store.state.selectedCategory
     }
   },
   methods: {
@@ -85,8 +118,9 @@ export default {
         type: 1,
         page: this.proceedInfo.currentPage - 1,
         keyword: this.keyword,
-        pageSize: this.proceedInfo.pageSize,
-        play_state: 1
+        pageSize: this.proceedPageSize,
+        play_state: 1,
+        category_title: this.selectedCategory
       }).then(({ data }) => {
         this.proceedInfo.tableData = data.data
         this.proceedInfo.totalCount = +data.count
@@ -100,8 +134,9 @@ export default {
         type: 1,
         page: this.endInfo.currentPage - 1,
         keyword: this.keyword,
-        pageSize: this.endInfo.pageSize,
-        play_state: 2
+        pageSize: this.endPageSize,
+        play_state: 2,
+        category_title: this.selectedCategory
       }).then(({ data }) => {
         this.endInfo.tableData = data.data
         this.endInfo.totalCount = +data.count
@@ -118,7 +153,10 @@ export default {
     keyword(val) {
       this.getAllProceedVideo()
       this.getAllEndVideo()
-
+    },
+    selectedCategory(val) {
+      this.getAllProceedVideo()
+      this.getAllEndVideo()
     }
   },
   /*  watch: {
@@ -139,6 +177,9 @@ export default {
     /*    let vm = this
         this.$store.commit('SET_IS_FIRST_SEARCH', false)
         this.keyword = this.$route.query.keyword*/
+    console.log(this.columnNum, window.getComputedStyle(this.$refs.proceedList, null).width)
+    //20px margin,200px width video
+    this.videoStyle.marginRight = (+window.getComputedStyle(this.$refs.proceedList, null).width.split('px')[0] - 40 - 200 * this.colNum) / (this.colNum - 1) + 'px'
     this.getAllProceedVideo()
     this.getAllEndVideo()
     /*    let rand
@@ -180,22 +221,29 @@ export default {
 
 </script>
 <style type="text/css" scoped>
-.livebroadcastList {}
+.livebroadcastList {
+  /*padding: 20px;*/
+}
+
+.video-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 
 .division {
-  position: absolute;
+  /*position: absolute;*/
   width: 100%;
-  top: 48%;
+  /*top: 470px;*/
   /*margin: 10px 0;*/
 }
 
 .proceed-list {
-  position: absolute;
+  /*position: absolute;*/
 }
 
 .end-list {
-  position: absolute;
-  top: 50%;
+  /*position: absolute;*/
 }
 
 .proceed-list,
@@ -212,16 +260,16 @@ export default {
   margin-bottom: 10px;
 }
 
-.proceed-list-wrapper .pageControl {
-  position: absolute;
-  top: 40%;
-  right: 1.5%;
+.pageControl {
+  text-align: right;
+  margin-top: 10px;
+  /*position: absolute;*/
+  /*top: 40%;*/
+  /*right: 1.5%;*/
 }
 
-.end-list-wrapper .pageControl {
-  position: absolute;
-  top: 90%;
-  right: 1.5%;
+.description {
+  font-size: 12px;
 }
 
 </style>

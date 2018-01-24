@@ -3,7 +3,7 @@
     <div class="shareInfo">
       <div class="shareScore-wrapper">
         <div class="title">分享赠送额度:</div>
-        <span class="shareScore">{{shareScore}}</span>
+        <span class="shareScore">{{shareaward}}</span>
       </div>
       <div class="clickNumber-wrapper">
         <span>点击量:{{clickNum}}次</span>
@@ -29,7 +29,7 @@
       </div>
       <div>
         <div class="title">邀请码:</div>
-        <div class="content">{{inviteCode}}</div>
+        <div class="content">{{userInfo.invite}}</div>
       </div>
     </div>
   </div>
@@ -39,20 +39,37 @@ import jrQrcode from 'jr-qrcode'
 export default {
   data() {
     return {
-      shareScore: 10,
-      clickNum: 200,
-      inviteLink: 'http://baidu.com',
-      inviteCode: 'YUQIXS',
-      showQRCode: false
+      /*      shareScore: 10,
+            clickNum: 200,
+            inviteLink: 'http://baidu.com',
+            inviteCode: 'YUQIXS',*/
+      showQRCode: false,
+      clickNum: 0,
+      shareaward:0
     }
   },
   computed: {
     QRCode() {
       return jrQrcode.getQrBase64(this.inviteLink, { width: 120, height: 120 })
+    },
+    userInfo() {
+      return this.$store.state.userInfo
+    },
+    inviteLink() {
+      return `http://localhost:8087/module/invitation.html?inviteCode=${this.userInfo.invite}`
     }
   },
   methods: {},
-  mounted() {}
+  mounted() {
+    this.$axios.post("user/getClickNum", {
+      user_id: this.userInfo.userid
+    }).then(({ data }) => this.clickNum = data.data.num)
+    this.$axios.post('User/getWallet', {
+      user_id: this.userInfo.userid
+    }).then(({ data }) => {
+      this.shareaward = +data.data.shareaward
+    })
+  }
 }
 
 </script>
@@ -72,7 +89,7 @@ export default {
 }
 
 .content {
-  margin-left: 100px;
+  margin-left: 50px;
   margin-right: 10px;
   display: inline-block;
 }
@@ -116,14 +133,14 @@ export default {
 }
 
 .qrCode {
-border-radius: 9px;
+  border-radius: 9px;
   font-size: 13px;
   background-color: #fff;
   margin-top: 12px;
   position: absolute;
   left: -23px;
   box-shadow: 0 5px 20px rgba(0, 34, 77, .1);
-  padding:3px 0;
+  padding: 3px 0;
 }
 
 .wechatFavicon {

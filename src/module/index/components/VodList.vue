@@ -8,8 +8,10 @@
       </el-table-column>
     </el-table>-->
     <div class="video-list">
-      <div v-for="video in tableData" class="video" :style="videoStyle" @click="itemClickHandler(video)">
-        <img src="../../../assets/videoDefualt.jpg" height="120" width="200">
+      <div v-for="(video,idx) in tableData" class="video"
+      :style="{'margin-right':(idx+1)%colNum===0?0:videoStyle.marginRight,'margin-bottom':videoStyle.marginBottom}" 
+      @click="itemClickHandler(video)">
+        <img :src="video.picture" height="120" width="200"><!--width 200 height 120-->
         <div class="content">
           <div class="description">
             <span>{{video.title}}</span>
@@ -151,8 +153,9 @@ export default {
     // this.$store.commit('SET_IS_FIRST_SEARCH', false)
     // this.keyword = this.$route.query.keyword
     // let rowNum=Math.floor(this.$refs.vodList.clientWidth/200)
-    console.log('pageSize:', this.pageSize, this.rowNum)
-    this.videoStyle.marginRight = (this.$refs.vodList.clientWidth - 200 * this.colNum) / this.colNum - 10 + 'px'
+    // console.log('pageSize:', this.pageSize, this.rowNum)
+    // console.log(this.$refs.vodList.clientWidth,window.getComputedStyle(this.$refs.vodList, null).width)
+    this.videoStyle.marginRight = +(window.getComputedStyle(this.$refs.vodList, null).width.split('px')[0]- 200 * this.colNum) / (this.colNum-1) + 'px'
     // this.videoStyle.mar
     this.getAllVideo()
 
@@ -200,7 +203,7 @@ export default {
 <style type="text/css" scoped>
 .vodList {
   /*margin: 20px;*/
-  padding: 10px;
+  padding: 20px;
   /*height: 90%;*/
   /*width: 100%;*/
   /*flex-direction:column;*/

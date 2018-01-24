@@ -7,7 +7,8 @@ const state = {
 	// uid:null,
 	userInfo:{
 		userid:"",
-		nickname:"NULL"
+		nickname:"NULL",
+		invite:null
 	},
 	showLogin:false,
 /*	vodSearchKeyword:null,

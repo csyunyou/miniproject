@@ -32,7 +32,7 @@ export default {
   mounted() {
     let vm=this
     this.$axios.post('User/getWallet',{
-      user_id:this.$store.state.userInfo.userid
+      user_id:this.userInfo.userid
     }).then(({ data })=>{
       this.balance=+data.data.balance
       this.award=+data.data.award

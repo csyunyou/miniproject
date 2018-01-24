@@ -8,15 +8,12 @@
     <div class="record-wrapper">
       <div class="title">脚步记录</div>
       <div class="recordTable">
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width:460px">
           <el-table-column prop="title" label="标题" sortable width="180">
           </el-table-column>
           <el-table-column prop="type" label="类型" width="180">
           </el-table-column>
-          <el-table-column prop="category_title" label="类别" width="100" :filters="filterOpts" :filter-method="filterTag" filter-placement="bottom-end">
-            <!--                     <template slot-scope="scope">
-                        <el-tag close-transition>{{scope.row.tag}}</el-tag>
-                    </template> -->
+          <el-table-column prop="category_title" label="类别" width="100">
           </el-table-column>
         </el-table>
       </div>
