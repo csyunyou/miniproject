@@ -8,6 +8,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'video.js/dist/video-js.css'
 import axios from '../../utils/http.js'
+import '../../assets/my.css'
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios;  
 Vue.use(ElementUI)

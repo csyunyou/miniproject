@@ -16,7 +16,6 @@
     <v-footer></v-footer>
   </div>
 </template>
-
 <script>
 import header from './components/header.vue'
 import footer from './components/footer.vue'
@@ -25,45 +24,45 @@ import specialRecommend from './components/SpecialRecmmend.vue'
 import categorySelector from './components/CategorySelector.vue'
 export default {
   name: 'app',
-  components:{
-    "v-header":header,
-    'v-footer':footer,
+  components: {
+    "v-header": header,
+    'v-footer': footer,
     studentInfo,
     specialRecommend,
-    categorySelector
+    categorySelector,
   },
-  data(){
-    return{
-      holyGrailHeight:0
+  data() {
+    return {
+      holyGrailHeight: 0
     }
   },
-  mounted(){
-    let vm=this
-    this.$axios.post('/public/islogin').then(function({data}){
-      if(data.code===0){
-        vm.$store.commit("SET_STATUS",'onLine')
-        vm.$axios.post('public/getUserInfoById',{
-          user_id:data.data.userid
-        }).then(function({data}){
-          vm.$store.commit('SET_USERINFO',data.data)
+  mounted() {
+    let vm = this
+    this.$axios.post('/public/islogin').then(function({ data }) {
+      if (data.code === 0) {
+        vm.$store.commit("SET_STATUS", 'onLine')
+        vm.$axios.post('public/getUserInfoById', {
+          user_id: data.data.userid
+        }).then(function({ data }) {
+          vm.$store.commit('SET_USERINFO', data.data)
         })
       }
     })
-    this.holyGrailHeight=this.$refs.holyGrailBody.clientHeight
+    this.holyGrailHeight = this.$refs.holyGrailBody.clientHeight
     // console.log(this.$refs.holyGrailBody.clientHeight,this.$refs.holyGrailBody.offsetHeight)
   }
 }
-</script>
 
+</script>
 <style type="text/css">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   /*font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width:90%;
-  margin:0 auto;
-/*
+  width: 90%;
+  margin: 0 auto;
+  /*
   text-align: center;
   color: #2c3e50;*/
   /*margin-top: 60px;*/
@@ -72,31 +71,35 @@ export default {
   /*border:1px solid black;*/
   /*height: 950px;*/
 }
-.HolyGrail-content .division{
+
+.HolyGrail-content .division {
   height: 10px;
   background-color: #fb6a4a;
 }
-.HolyGrail-body{
+
+.HolyGrail-body {
   display: flex;
   /*flex:2;*/
-  height:770px;
+  height: 770px;
 }
-.HolyGrail-content{
-  flex:1;
-  background-color: #f7fcf5;
-  border-right:2px solid #ef3b2c;
-  border-left:2px solid #ef3b2c;
-  position: relative;
 
+.HolyGrail-content {
+  flex: 1;
+  background-color: #f7fcf5;
+  border-right: 2px solid #ef3b2c;
+  border-left: 2px solid #ef3b2c;
+  position: relative;
 }
-.HolyGrail-nav,.HolyGrail-ads{
-  flex:0 0 220px;
-  background:#f0f0f0;
+
+.HolyGrail-nav,
+.HolyGrail-ads {
+  flex: 0 0 220px;
+  background: #f0f0f0;
 }
-.HolyGrail-nav{
-  order:-1;
-  background:#f0f0f0;
-  
+
+.HolyGrail-nav {
+  order: -1;
+  background: #f0f0f0;
 }
 
 </style>

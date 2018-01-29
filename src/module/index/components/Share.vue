@@ -56,7 +56,7 @@ export default {
       return this.$store.state.userInfo
     },
     inviteLink() {
-      return `http://localhost:8087/module/invitation.html?inviteCode=${this.userInfo.invite}`
+      return `http://localhost:8087/module/invitation.html?inviteCode=${this.userInfo.invite}&id=${this.userInfo.userid}`
     }
   },
   methods: {},

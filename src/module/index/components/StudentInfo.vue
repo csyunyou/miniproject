@@ -6,9 +6,15 @@
     </div>
     <div class="info">
       <div class="maininfo-wrapper">
-        <div class="avatar">
-          <img src="../../../assets/favicon.jpg" height="50" width="50" />
+        <!--         <div class="avatar">
+          <img src="../../../assets/favicon.jpg"  height="50" width="50"/>
         </div>
+
+ -->
+        <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid,photo:'pic'}" name="pic">
+          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
         <div class="content">
           <div class="student-name">学生用户</div>
           <div>{{userInfo?userInfo.nickname:"null"}}</div>
@@ -22,7 +28,7 @@
         </ul>
       </div>
     </div>
-<!--     <button @click="checkLogin">log in?</button>
+    <!--     <button @click="checkLogin">log in?</button>
     <button @click="setpwd">setpwd</button> -->
     <div v-show="showLogin||showRegister||showForgetPwd" class="shadow"></div>
     <div class="register-login-wrapper">
@@ -45,23 +51,24 @@ export default {
         wallet: '钱包余额',
         footprint: '脚步记录',
         share: '我的分享',
-        coupoun: '我的优惠',
+        coupon: '我的优惠',
         supplementaryInfo: '资料补充',
       },
       // showLogin: false,
       showRegister: false,
       showForgetPwd: false,
       showSetPwd: false,
-      setPwdCredential:null
+      setPwdCredential: null,
+      imageUrl:null
       // extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
     }
   },
   methods: {
     logout() {
-      let vm=this
+      let vm = this
       this.$axios.post('public/logout').then(function(data) {
-        vm.$store.commit('SET_USERINFO',null)
-        vm.$store.commit('SET_STATUS',"offLine")
+        vm.$store.commit('SET_USERINFO', null)
+        vm.$store.commit('SET_STATUS', "offLine")
       })
     },
     checkLogin() {
@@ -69,23 +76,31 @@ export default {
         // console.log(data)
       })
     },
-    validateSuccessHandler(credential){
-      console.log('credential',credential)
-      this.showSetPwd=true
-      this.setPwdCredential=credential
+    validateSuccessHandler(credential) {
+      console.log('credential', credential)
+      this.showSetPwd = true
+      this.setPwdCredential = credential
     },
-    setpwd(){
-      
+    setpwd() {
+
+    },
+    handleAvatarSuccess(res, file) {
+      console.log('suceess')
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    handleAvatarMyError(error,file){
+      this.imageUrl = URL.createObjectURL(file.raw);
+      console.log('erro',arguments)
     }
   },
   computed: {
     userInfo() {
       return this.$store.state.userInfo
     },
-    showLogin(){
+    showLogin() {
       return this.$store.state.showLogin
     },
-    status(){
+    status() {
       return this.$store.state.status
     }
   },
@@ -99,6 +114,38 @@ export default {
 
 </script>
 <style type="text/css" scoped>
+.avatar-uploader {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-uploader:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.avatar-uploader-icon {
+  font-size: 25px;
+  color: #8c939d;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  display: block;
+}
+
 .shadow {
   width: 100%;
   height: 100%;
@@ -135,15 +182,16 @@ export default {
   margin: 40px;
 }
 
-.avatar,
+.avatar-uploader,
 .content {
   vertical-align: top;
 }
 
-.avatar {
+
+/*.avatar {
   display: inline-block;
   margin-right: 5px;
-}
+}*/
 
 .content {
   font-weight: bold;

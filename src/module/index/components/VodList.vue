@@ -47,11 +47,11 @@ export default {
     keyword() {
       return this.$store.state.vodKeyword
     },
-    colNum() {
+/*    colNum() {
       return Math.floor(this.$refs.vodList.clientWidth / 200)
-    },
+    },*/
     pageSize() {
-      return this.rowNum * this.columnNum
+      return this.rowNum * this.colNum
     },
     selectedCategory() {
       return this.$store.state.selectedCategory
@@ -64,8 +64,8 @@ export default {
       currentPage: 1,
       // pageSize: 10,
       // keyword:null,
+      colNum:null,
       totalCount: 0,
-      columnNum: 3,
       rowNum: 4,
       contentWidth: 0,
       videoStyle: {
@@ -155,6 +155,7 @@ export default {
     // let rowNum=Math.floor(this.$refs.vodList.clientWidth/200)
     // console.log('pageSize:', this.pageSize, this.rowNum)
     // console.log(this.$refs.vodList.clientWidth,window.getComputedStyle(this.$refs.vodList, null).width)
+    this.colNum=Math.floor(this.$refs.vodList.clientWidth / 200)
     this.videoStyle.marginRight = +(window.getComputedStyle(this.$refs.vodList, null).width.split('px')[0]- 200 * this.colNum) / (this.colNum-1) + 'px'
     // this.videoStyle.mar
     this.getAllVideo()

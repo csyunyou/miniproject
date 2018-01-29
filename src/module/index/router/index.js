@@ -9,6 +9,8 @@ import supplementaryInfo from '../components/SupplementaryInfo.vue'
 import videoPlayer from '../components/VideoPlayer.vue'
 import footprint from '../components/Footprint.vue'
 import loginHint from '../components/LoginHint.vue'
+import coupon from '../components/Coupon.vue'
+import order from '../components/Order.vue'
 import test from '../components/Test.vue'
 import axios from '../../../utils/http.js'
 Vue.use(Router)
@@ -48,6 +50,12 @@ const router = new Router({
     }, {
       path: '/loginhint',
       component: loginHint
+    }, {
+      path: '/coupon',
+      component: coupon
+    },{
+      path: '/order',
+      component: order
     }
   ]
 })

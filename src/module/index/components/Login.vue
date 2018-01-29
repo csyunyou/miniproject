@@ -68,7 +68,7 @@ export default {
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
             this.$axios.post('public/login', {
-              mobile: this.loginForm.account,
+              account: this.loginForm.account,
               password: this.loginForm.password
             }).then(function({
               data

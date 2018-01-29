@@ -1,34 +1,64 @@
 <template>
   <div class="register">
-    <div class="header">
-      <span>注册</span>
-      <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
-    </div>
-    <el-form ref="registerForm" :model="registerForm" label-width="80px" size="small" class="register-form" :rules=rules>
-      <el-form-item label="手机号" prop="phoneNumber">
-        <el-input v-model="registerForm.phoneNumber"></el-input>
-      </el-form-item>
-      <el-form-item label="校验码">
-        <el-input v-model="registerForm.checkCode" class="checkCode-input"></el-input>
-        <el-button type="primary" class="checkCode-btn" @click="getCheckcode">免费获取校验码</el-button>
-        <!-- <img :src="verificationImgSrc" height="32"/> -->
-      </el-form-item>
-      <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="registerForm.nickname"></el-input>
-      </el-form-item>
-      <!--       <el-form-item label="验证码" prop="verificationCode">
+    <el-tabs tab-position="top">
+      <el-tab-pane label="手机注册">
+        <!--         <div class="header">
+          <span>注册</span>
+          <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
+        </div> -->
+        <el-form ref="registerForm" :model="registerForm" label-width="80px" size="small" class="register-form" :rules=rules>
+          <el-form-item label="手机号" prop="phoneNumber">
+            <el-input v-model="registerForm.phoneNumber"></el-input>
+          </el-form-item>
+          <el-form-item label="校验码">
+            <el-input v-model="registerForm.checkCode" class="checkCode-input"></el-input>
+            <el-button type="primary" class="checkCode-btn" @click="getCheckcode">免费获取校验码</el-button>
+            <!-- <img :src="verificationImgSrc" height="32"/> -->
+          </el-form-item>
+          <el-form-item label="昵称" prop="nickname">
+            <el-input v-model="registerForm.nickname"></el-input>
+          </el-form-item>
+          <!--       <el-form-item label="验证码" prop="verificationCode">
         <el-input v-model="registerForm.verificationCode"></el-input>
       </el-form-item> -->
-      <el-form-item label="密码" prop="password">
-        <el-input v-model="registerForm.password"></el-input>
-      </el-form-item>
-      <el-form-item label="确认密码" prop="confirmPwd">
-        <el-input v-model="registerForm.confirmPwd"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="register">马上注册</el-button>
-      </el-form-item>
-    </el-form>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="registerForm.password"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPwd">
+            <el-input v-model="registerForm.confirmPwd"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="register">马上注册</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="邮箱注册">
+        <el-form ref="emailRegForm" :model="emailRegForm" label-width="80px" size="small" class="register-form" :rules=rules>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="emailRegForm.email"></el-input>
+          </el-form-item>
+          <!--           <el-form-item label="校验码">
+            <el-input v-model="registerForm.checkCode" class="checkCode-input"></el-input>
+            <el-button type="primary" class="checkCode-btn" @click="getCheckcode">免费获取校验码</el-button>
+          </el-form-item> -->
+          <el-form-item label="昵称" prop="nickname">
+            <el-input v-model="emailRegForm.nickname"></el-input>
+          </el-form-item>
+          <!--       <el-form-item label="验证码" prop="verificationCode">
+        <el-input v-model="registerForm.verificationCode"></el-input>
+      </el-form-item> -->
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="emailRegForm.password"></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="confirmPwd">
+            <el-input v-model="emailRegForm.confirmPwd"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="registerByEmail">马上注册</el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
     <div class="errorInfo" v-show="registerMsg">
       <span>*{{registerMsg}}</span>
     </div>
@@ -48,11 +78,19 @@ export default {
         nickname: "",
         // verificationCode: "",
         password: "",
-        confirmPwd: ""
+        confirmPwd: "",
+        email: ""
+      },
+      emailRegForm: {
+        nickname: "",
+        password: "",
+        confirmPwd: "",
+        email: ""
       },
       verificationImgSrc: "",
       rules: {
         phoneNumber: [{ validator: this.phoneValidator, trigger: 'blur' }],
+        email: [{ validator: this.emailValidator, trigger: 'blur' }],
         password: [{ validator: this.passwordValidator, trigger: 'blur' }],
         confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }],
         nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
@@ -94,11 +132,28 @@ export default {
         }
       })
     },
-    getCheckcode(){
-      this.$axios.post('/public/sendCheckcode',{
-        mobile:this.registerForm.phoneNumber,
-        templatecode:'tp_code1'
-      }).then(function(){
+    registerByEmail(){
+      this.$refs.emailRegForm.validate(valid => {
+        if (valid) {
+          this.$axios.post(
+            '/public/register', {
+              mobile: this.registerForm.phoneNumber,
+              password: this.registerForm.password,
+              checkCode: this.registerForm.checkCode,
+              nickname: this.registerForm.nickname
+            }).then(function({ data }) {
+            vm.registerMsg = data.str
+          })
+        } else {
+          console.log('error')
+        }
+      })
+    },
+    getCheckcode() {
+      this.$axios.post('/public/sendCheckcode', {
+        mobile: this.registerForm.phoneNumber,
+        templatecode: 'tp_code1'
+      }).then(function() {
 
       })
     },
@@ -111,6 +166,14 @@ export default {
         cb(new Error("请输入手机号"))
       else if (!val.match(/^1[3|4|5|8][0-9]\d{4,8}$/))
         cb(new Error('无效的手机号'))
+      else
+        cb()
+    },
+    emailValidator(rule, val, cb) {
+      if (val === "")
+        cb(new Error("请输入邮箱"))
+      else if (!val.match(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/))
+        cb(new Error('无效的邮箱地址'))
       else
         cb()
     },
@@ -154,15 +217,19 @@ export default {
   color: #2d2f33;
   border: 1px solid black;
   border-radius: 5px;
+  padding: 10px;
 }
 
-.header {
+
+
+
+/*.header {
   border-bottom: 1px solid #e6ebf5;
   height: 50px;
   line-height: 50px;
   padding-left: 20px;
   font-size: 20px;
-}
+}*/
 
 .footer {
   border-top: 1px solid #e6ebf5;
@@ -194,13 +261,6 @@ export default {
 .checkCode-input {
   width: 50%;
 }
-
-
-
-
-
-
-
 
 
 

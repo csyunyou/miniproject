@@ -16,6 +16,11 @@
         </el-select>
         <el-button slot="append" icon="el-icon-search" @click="searchBtnClickHandler"></el-button>
       </el-input>
+      <!-- <el-button type="text" class="signInBtn" plain icon="el-icon-star-on">每日签到</el-button> -->
+      <div class="signIn" @click="signIn">
+        <i class="el-icon-edit"></i>
+        <span>每日签到</span>
+      </div>
       <ul class="linklist-wrapper">
         <li v-for="(val,key) in linkInfo">
           <router-link :to="`/${key}`">{{val}}</router-link>
@@ -36,24 +41,53 @@ export default {
         livebroadcastList: '直播',
         about: '关于'
       },
-      type: ''
+      type: '',
+      shadowVisible: false
     }
   },
   methods: {
     searchBtnClickHandler() {
       // console.log(this.type,this.searchInput)
-      this.$store.commit(this.type===0?'SET_VOD_KEYWORD':'SET_LIVE_KEYWORD',this.searchInput)
+      this.$store.commit(this.type === 0 ? 'SET_VOD_KEYWORD' : 'SET_LIVE_KEYWORD', this.searchInput)
       // this.$store.commit('')
       this.$router.push({
         path: this.type === 0 ? "/vodList" : "/livebroadcastList",
         // query: { keyword: this.searchInput,isFirst:this.isFirstSearch}
       })
-    }
+    },
+    signIn() {
+      let vm = this
+      if (this.status !== 'onLine') {
+        this.$message({ message: '您尚未登录', type: 'error' });
+      } else {
+        this.$axios.post('/user/signIn', {
+          user_id: this.userInfo.userid
+        }).then(function({ data }) {
+          if (data.code === 0) {
+            vm.$alert(data.str, '签到失败', {
+              type: 'error',
+              center: true
+            })
+          } else {
+            vm.$alert(`恭喜您，获得${data.data.discount}折优惠券`, '签到成功', {
+              type: 'success',
+              center: true
+            })
+          }
+        })
+      }
 
+    }
   },
-  computed:{
-    isFirstSearch(){
+  computed: {
+    isFirstSearch() {
       return this.$store.state.isFirstSearch
+    },
+    userInfo() {
+      return this.$store.state.userInfo
+    },
+    status() {
+      return this.$store.state.status
     }
   }
 }
@@ -62,10 +96,14 @@ export default {
 <style type="text/css" scoped>
 .header {
   border-bottom: 9px solid #ef3b2c;
-  height:120px;
+  height: 120px;
   display: flex;
   position: relative;
 }
+
+
+
+
 
 
 
@@ -125,6 +163,13 @@ export default {
 
 .typeSelector {
   width: 120px;
+}
+
+.signIn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
 }
 
 </style>
