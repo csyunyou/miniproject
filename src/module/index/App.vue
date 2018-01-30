@@ -37,6 +37,8 @@ export default {
     }
   },
   mounted() {
+
+
     let vm = this
     this.$axios.post('/public/islogin').then(function({ data }) {
       if (data.code === 0) {

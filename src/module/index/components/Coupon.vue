@@ -1,10 +1,10 @@
 <template>
   <div class="coupon-wrapper">
     <div class="header">
-      <ul>
-        <li>有效的优惠券</li>
-        <li>过期的优惠券</li>
-        <li>已使用的优惠券</li>
+      <ul @click="itemClickHandler">
+        <li id="valid">有效的优惠券:{{couponCategory?couponCategory.find(d=>d.category_title==='有效').count:0}}张</li>
+        <li id="expired">过期的优惠券:{{couponCategory?couponCategory.find(d=>d.category_title==='过期').count:0}}张</li>
+        <li id="used">已使用的优惠券:{{couponCategory?couponCategory.find(d=>d.category_title==='已使用').count:0}}张</li>
       </ul>
     </div>
     <div class="division"></div>
@@ -41,14 +41,20 @@ export default {
       // pageSize: 10,
       // keyword:null,
       totalCount: 0,
-      rowNum: 7,
+      rowNum: 5,
       contentWidth: 0,
       couponStyle: {
         marginBottom: '10px',
         marginRight: 0
       },
       colNum: null,
-      urls: ['user/getAllValidCoupon', 'user/getAllUsedCoupon', 'user/getAllExpiredCoupon'] //0 validate 1 used 2 expire 
+      urlMap: {
+        valid: 'user/getAllValidCoupon',
+        used: 'user/getAllUsedCoupon',
+        expired: 'user/getAllExpiredCoupon'
+      }, //0 validate 1 used 2 expire 
+      couponCategory: null,
+      type:null
     }
   },
   computed: {
@@ -59,10 +65,15 @@ export default {
       return this.rowNum * this.colNum
     }
   },
+  watch: {
+    currentPage() {
+      this.getAllCoupon(this.type)
+    }
+  },
   methods: {
     getAllCoupon(type) {
       let vm = this
-      this.$axios.post(this.urls[type], {
+      this.$axios.post(this.urlMap[type], {
         user_id: this.userInfo.userid,
         page: this.currentPage - 1,
         pageSize: this.pageSize
@@ -70,6 +81,10 @@ export default {
         this.tableData = data.data
         this.totalCount = +data.count
       })
+    },
+    itemClickHandler(e) {
+      this.type=e.target.id
+      this.getAllCoupon(e.target.id)
     }
   },
   mounted() {
@@ -77,7 +92,12 @@ export default {
     this.contentWidth = +window.getComputedStyle(this.$refs.couponList, null).width.split('px')[0]
     this.colNum = Math.floor(this.contentWidth / 200)
     this.couponStyle.marginRight = (this.contentWidth - 200 * this.colNum) / (this.colNum - 1) + 'px'
-    this.getAllCoupon(0)
+    this.$axios.post('user/getCouponCategoryCount', {
+      user_id: this.userInfo.userid
+    }).then(({ data }) => {
+      this.couponCategory = data.data
+    })
+    // this.getAllCoupon(0)
   }
 }
 
@@ -85,6 +105,7 @@ export default {
 <style type="text/css" scoped>
 ul {
   list-style: none;
+  text-decoration: underline;
 }
 
 .header {
@@ -109,8 +130,8 @@ ul {
   border-radius: 5px;
   position: relative;
   flex: 0 0 auto;
-  /*	background-image: url(../../../assets/couponBg.jpeg);
-	background-size: cover;*/
+  /*  background-image: url(../../../assets/couponBg.jpeg);
+  background-size: cover;*/
 }
 
 .coupon .content {
@@ -120,7 +141,9 @@ ul {
   transform: translate(-50%, -50%);
   width: 100%;
 }
-.coupon .content div{
-	text-align: center;
+
+.coupon .content div {
+  text-align: center;
 }
+
 </style>

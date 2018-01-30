@@ -17,7 +17,7 @@
             <span>{{video.title}}</span>
             <span>{{video.speaker}}</span>
           </div>
-          <div class="price">123元</div>
+          <div class="price">{{video.price}}</div>
         </div>
       </div>
     </div>

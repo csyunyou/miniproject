@@ -5,13 +5,13 @@
       <span v-else @click="logout">退出</span>
     </div>
     <div class="info">
-      <div class="maininfo-wrapper">
+      <div class="maininfo-wrapper" v-show="status==='onLine'">
         <!--         <div class="avatar">
           <img src="../../../assets/favicon.jpg"  height="50" width="50"/>
         </div>
 
  -->
-        <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid,photo:'pic'}" name="pic">
+        <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid,name:'pic'}" name="pic" :with-credentials="true">
           <img v-if="imageUrl" :src="imageUrl" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
@@ -37,6 +37,12 @@
       <forget-password v-show="showForgetPwd" @close="showForgetPwd=false" @validateSuccess="validateSuccessHandler"></forget-password>
       <set-password v-show="showSetPwd" @close="showSetPwd=false" :credential="setPwdCredential"></set-password>
     </div>
+    <form action="http://hyh.bojiatouzi.com/User/upLoadAvatar" enctype="multipart/form-data" method="post">
+      <!-- <input type="text" name="name" /> -->
+      <input type="file" name="photo" @change="changeHandler"/>
+<!--       <input type="hidden" name="user_id" value="3" />
+      <input type="button" value="提交" @click> -->
+    </form>
   </div>
 </template>
 <script type="text/javascript">
@@ -59,7 +65,7 @@ export default {
       showForgetPwd: false,
       showSetPwd: false,
       setPwdCredential: null,
-      imageUrl:null
+      imageUrl: null
       // extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
     }
   },
@@ -88,9 +94,23 @@ export default {
       console.log('suceess')
       this.imageUrl = URL.createObjectURL(file.raw);
     },
-    handleAvatarMyError(error,file){
+    handleAvatarMyError(error, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
-      console.log('erro',arguments)
+      console.log('erro', arguments)
+    },
+    changeHandler(e){
+      console.log("change")
+      this.upLoadFile(e.target.files)
+    },
+    upLoadFile(files) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', 'http://hyh.bojiatouzi.com/user/upLoadAvatar', true);
+      xhr.withCredentials = true;
+      let formData = new FormData()
+      formData.append("user_id", "3")
+      formData.append("name","pic")
+      formData.append("pic",files[0])
+      xhr.send(formData);
     }
   },
   computed: {
@@ -186,6 +206,8 @@ export default {
 .content {
   vertical-align: top;
 }
+
+
 
 
 /*.avatar {

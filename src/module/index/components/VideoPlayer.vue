@@ -55,7 +55,8 @@ export default {
       videoPlayer: null,
       videoInfo: {},
       shareLink: "http://192.168.155.1:8087/#/videoPlayer?type=vod",
-      showQRCode: false
+      showQRCode: false,
+      validCoupons: null
     }
   },
   computed: {
@@ -64,12 +65,16 @@ export default {
     },
     selectedVideo() {
       return this.$store.state.selectedVideo
+    },
+    userInfo() {
+      return this.$store.state.userInfo
     }
   },
   mounted() {
     console.log('mounted')
     let vm = this
     // console.log(this.$route.query.id)
+
     this.videoInfo = {
       title: this.selectedVideo.title,
       // date: "2016-03-01",
@@ -83,7 +88,13 @@ export default {
       // this.videoPlayer.src({ type: 'video/mp4', src: this.videoInfo.link })
       // this.videoPlayer.src({ type: 'video/mp4', src: 'http://localhost:3000/static/test.mp4' })
       // this.videoPlayer.src({ type: 'video/mp4', src: "" })
-      this.videoPlayer.src({ type: 'video/mp4', src: '../../../../static/hwd.mp4' })
+      // this.videoPlayer.src({ type: 'video/mp4', src: '../../../../static/hwd.mp4' })
+      this.$axios.post('uploads/video', {
+        user_id: this.userInfo.userid,
+        vid: this.videoInfo.id,
+      }).then(function(data) {
+
+      })
     } else {
       this.videoPlayer.src({ type: 'rtmp/flv', src: this.videoInfo.link })
     }
@@ -115,16 +126,19 @@ export default {
       display.el().classList.remove('vjs-hidden')
       let div = document.createElement('div')
       div.classList.add('payTip')
-      div.innerHTML =
-        `
-        <div class='title'>此视屏需要2额度哦！</div>
+      vm.$axios.post('user/getAllValidCoupon', {
+        user_id: vm.userInfo.userid,
+        page: 0,
+        pageSize: 100
+      }).then(function({ data }) {
+        vm.validCoupons = data.data
+        div.innerHTML =
+          `
+        <div class='title'>此视屏需要${vm.selectedVideo.price}额度哦！</div>
         <div class="couponSelector">
         <label>可以使用：</label>
         <select name="cars">
-<option value="volvo">Volvo</option>
-<option value="saab">Saab</option>
-<option value="fiat">Fiat</option>
-<option value="audi">Audi</option>
+<option value="volvo">${vm.validCoupons[0].discount}折</option>
 </select>
 </div>
 <div>
@@ -133,9 +147,11 @@ export default {
 </div>
 
       `
-/*      div.addEventListener('click', function(e) {
-        vm.$router.push({ path: '/order', query: { vid: vm.selectedVideo.id } })
-      })*/
+      })
+
+      /*      div.addEventListener('click', function(e) {
+              vm.$router.push({ path: '/order', query: { vid: vm.selectedVideo.id } })
+            })*/
       display.contentEl().appendChild(div)
 
       /*      let btn=vm.videoPlayer.getChild('bigPlayButton')

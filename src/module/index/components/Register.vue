@@ -1,11 +1,11 @@
 <template>
   <div class="register">
-    <el-tabs tab-position="top">
-      <el-tab-pane label="手机注册">
-        <!--         <div class="header">
-          <span>注册</span>
-          <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
-        </div> -->
+    <div class="header">
+      <span>注册</span>
+      <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
+    </div>
+    <el-tabs tab-position="top" class="tabContent" v-model="tabValue" @tab-click="registerMsg=''">
+      <el-tab-pane label="手机注册" name="phoneForm">
         <el-form ref="registerForm" :model="registerForm" label-width="80px" size="small" class="register-form" :rules=rules>
           <el-form-item label="手机号" prop="phoneNumber">
             <el-input v-model="registerForm.phoneNumber"></el-input>
@@ -32,7 +32,7 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="邮箱注册">
+      <el-tab-pane label="邮箱注册" name="emailForm">
         <el-form ref="emailRegForm" :model="emailRegForm" label-width="80px" size="small" class="register-form" :rules=rules>
           <el-form-item label="邮箱" prop="email">
             <el-input v-model="emailRegForm.email"></el-input>
@@ -95,10 +95,13 @@ export default {
         confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }],
         nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
       },
-      registerMsg: ""
+      registerMsg: "",
+      // emailRegMsg:""
+      tabValue: 'phoneForm'
     }
   },
   methods: {
+
     /*    test() {
           console.log(`${this.$store.state.domain}/User/reg`)
           axios({
@@ -132,15 +135,15 @@ export default {
         }
       })
     },
-    registerByEmail(){
+    registerByEmail() {
+      let vm=this
       this.$refs.emailRegForm.validate(valid => {
         if (valid) {
           this.$axios.post(
-            '/public/register', {
-              mobile: this.registerForm.phoneNumber,
-              password: this.registerForm.password,
-              checkCode: this.registerForm.checkCode,
-              nickname: this.registerForm.nickname
+            '/public/registerByEmail', {
+              email: this.emailRegForm.email,
+              password: this.emailRegForm.password,
+              nickname: this.emailRegForm.nickname
             }).then(function({ data }) {
             vm.registerMsg = data.str
           })
@@ -181,8 +184,11 @@ export default {
       if (val === '') {
         cb(new Error('请输入密码'));
       } else {
-        if (this.registerForm.confirmPwd !== '') {
+        if (this.tabValue === 'phoneForm' && this.registerForm.confirmPwd !== '') {
           this.$refs.registerForm.validateField('confirmPwd');
+        }
+        if (this.tabValue === 'emailForm' && this.emailRegForm.confirmPwd !== '') {
+          this.$refs.emailRegForm.validateField('confirmPwd');
         }
         cb();
       }
@@ -190,9 +196,11 @@ export default {
     confirmPwdValidator(rule, val, cb) {
       if (val === '') {
         cb(new Error('请再次输入密码'));
-      } else if (val !== this.registerForm.password) {
+      } else if (this.tabValue === 'phoneForm'&&val !== this.registerForm.password) {
         cb(new Error('两次输入密码不一致!'));
-      } else {
+      } else if(this.tabValue === 'emailForm'&&val !== this.emailRegForm.password){
+        cb(new Error('两次输入密码不一致!'));
+      }else {
         cb();
       }
     }
@@ -217,19 +225,23 @@ export default {
   color: #2d2f33;
   border: 1px solid black;
   border-radius: 5px;
+  position: relative;
+}
+
+.tabContent {
   padding: 10px;
 }
 
 
 
 
-/*.header {
+.header {
   border-bottom: 1px solid #e6ebf5;
   height: 50px;
   line-height: 50px;
   padding-left: 20px;
   font-size: 20px;
-}*/
+}
 
 .footer {
   border-top: 1px solid #e6ebf5;
@@ -261,6 +273,8 @@ export default {
 .checkCode-input {
   width: 50%;
 }
+
+
 
 
 
