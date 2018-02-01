@@ -8,12 +8,12 @@
       </el-table-column>
     </el-table>-->
     <div class="video-list">
-      <div v-for="(video,idx) in tableData" class="video"
-      :style="{'margin-right':(idx+1)%colNum===0?0:videoStyle.marginRight,'margin-bottom':videoStyle.marginBottom}" 
-      @click="itemClickHandler(video)">
-        <img :src="video.picture" height="120" width="200"><!--width 200 height 120-->
+      <div v-for="(video,idx) in tableData" class="video" :style="{'margin-right':(idx+1)%colNum===0?0:videoStyle.marginRight,'margin-bottom':videoStyle.marginBottom}" @click="itemClickHandler(video)">
+        <img :src="video.picture" height="120" width="200">
+        <!--width 200 height 120-->
         <div class="content">
           <div class="description">
+            <span>{{video.id}}</span>
             <span>{{video.title}}</span>
             <span>{{video.speaker}}</span>
           </div>
@@ -47,9 +47,9 @@ export default {
     keyword() {
       return this.$store.state.vodKeyword
     },
-/*    colNum() {
-      return Math.floor(this.$refs.vodList.clientWidth / 200)
-    },*/
+    /*    colNum() {
+          return Math.floor(this.$refs.vodList.clientWidth / 200)
+        },*/
     pageSize() {
       return this.rowNum * this.colNum
     },
@@ -64,7 +64,7 @@ export default {
       currentPage: 1,
       // pageSize: 10,
       // keyword:null,
-      colNum:null,
+      colNum: null,
       totalCount: 0,
       rowNum: 4,
       contentWidth: 0,
@@ -84,12 +84,11 @@ export default {
       })
       this.$router.push({
         path: `/videoPlayer`,
-/*        query: {
-          id: `${video.id}`,
-          type: 'vod'
-        }*/
+        query: {
+          id: `${video.id}`
+        }
       })
-      this.$store.commit('SET_SELECTED_VIDEO',video)
+      // this.$store.commit('SET_SELECTED_VIDEO',video)
     },
     rowClickHandler(row, evt, col) {
       this.$axios.post('user/addRecord', {
@@ -155,8 +154,8 @@ export default {
     // let rowNum=Math.floor(this.$refs.vodList.clientWidth/200)
     // console.log('pageSize:', this.pageSize, this.rowNum)
     // console.log(this.$refs.vodList.clientWidth,window.getComputedStyle(this.$refs.vodList, null).width)
-    this.colNum=Math.floor(this.$refs.vodList.clientWidth / 200)
-    this.videoStyle.marginRight = +(window.getComputedStyle(this.$refs.vodList, null).width.split('px')[0]- 200 * this.colNum) / (this.colNum-1) + 'px'
+    this.colNum = Math.floor(this.$refs.vodList.clientWidth / 200)
+    this.videoStyle.marginRight = +(window.getComputedStyle(this.$refs.vodList, null).width.split('px')[0] - 200 * this.colNum) / (this.colNum - 1) + 'px'
     // this.videoStyle.mar
     this.getAllVideo()
 

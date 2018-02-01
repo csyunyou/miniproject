@@ -11,8 +11,8 @@
         </div>
 
  -->
-        <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid,name:'pic'}" name="pic" :with-credentials="true">
-          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid}" name="photo" :with-credentials="true">
+          <img v-if="userInfo.imgeUrl" :src='"http://hyh.bojiatouzi.com/"+userInfo.imgeUrl' class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
         <div class="content">
@@ -37,12 +37,10 @@
       <forget-password v-show="showForgetPwd" @close="showForgetPwd=false" @validateSuccess="validateSuccessHandler"></forget-password>
       <set-password v-show="showSetPwd" @close="showSetPwd=false" :credential="setPwdCredential"></set-password>
     </div>
-    <form action="http://hyh.bojiatouzi.com/User/upLoadAvatar" enctype="multipart/form-data" method="post">
-      <!-- <input type="text" name="name" /> -->
+    <!--     <form action="http://hyh.bojiatouzi.com/User/upLoadAvatar" enctype="multipart/form-data" method="post">
       <input type="file" name="photo" @change="changeHandler"/>
-<!--       <input type="hidden" name="user_id" value="3" />
-      <input type="button" value="提交" @click> -->
-    </form>
+
+    </form> -->
   </div>
 </template>
 <script type="text/javascript">
@@ -65,7 +63,7 @@ export default {
       showForgetPwd: false,
       showSetPwd: false,
       setPwdCredential: null,
-      imageUrl: null
+      // imageUrl: null
       // extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
     }
   },
@@ -73,7 +71,7 @@ export default {
     logout() {
       let vm = this
       this.$axios.post('public/logout').then(function(data) {
-        vm.$store.commit('SET_USERINFO', null)
+        vm.$store.commit('SET_USERINFO', {})
         vm.$store.commit('SET_STATUS', "offLine")
       })
     },
@@ -92,13 +90,15 @@ export default {
     },
     handleAvatarSuccess(res, file) {
       console.log('suceess')
-      this.imageUrl = URL.createObjectURL(file.raw);
+      // console.log('res',res)
+      this.$store.commit('SET_USERINFO',{...this.userInfo,imgeUrl:res.data.imgeUrl})
+      // this.imageUrl = URL.createObjectURL(file.raw);
     },
     handleAvatarMyError(error, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
       console.log('erro', arguments)
     },
-    changeHandler(e){
+    changeHandler(e) {
       console.log("change")
       this.upLoadFile(e.target.files)
     },
@@ -108,8 +108,8 @@ export default {
       xhr.withCredentials = true;
       let formData = new FormData()
       formData.append("user_id", "3")
-      formData.append("name","pic")
-      formData.append("pic",files[0])
+      formData.append("name", "pic")
+      formData.append("pic", files[0])
       xhr.send(formData);
     }
   },
@@ -206,6 +206,9 @@ export default {
 .content {
   vertical-align: top;
 }
+
+
+
 
 
 

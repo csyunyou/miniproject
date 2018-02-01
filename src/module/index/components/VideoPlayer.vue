@@ -12,8 +12,8 @@
     </video>
     <div class="videoInfo">
       <div class="title">
-        <span v-if="selectedVideo.type==='2'">视屏:</span>
-        <span v-else-if="selectedVideo.type==='1'">直播:</span>
+        <span v-if="videoInfo.type==='2'">视屏:</span>
+        <span v-else-if="videoInfo.type==='1'">直播:</span>
         <span>{{videoInfo.title}}</span>
       </div>
       <!--      <div class="date">
@@ -63,41 +63,28 @@ export default {
     QRCode() {
       return jrQrcode.getQrBase64(this.shareLink, { width: 120, height: 120 })
     },
-    selectedVideo() {
-      return this.$store.state.selectedVideo
-    },
+    /*    selectedVideo() {
+          return this.$store.state.selectedVideo
+        },*/
     userInfo() {
       return this.$store.state.userInfo
     }
   },
   mounted() {
     console.log('mounted')
+    // console.log('mounted', this.selectedVideo.id)
     let vm = this
-    // console.log(this.$route.query.id)
+    console.log(this.$route.query.id)
 
-    this.videoInfo = {
-      title: this.selectedVideo.title,
-      // date: "2016-03-01",
-      speaker: this.selectedVideo.speaker,
-      link: this.selectedVideo.link,
-      id: this.selectedVideo.id
-    }
+    /*    this.videoInfo = {
+          title: this.selectedVideo.title,
+          speaker: this.selectedVideo.speaker,
+          link: this.selectedVideo.link,
+          id: this.selectedVideo.id
+        }*/
     this.videoPlayer = videojs('video-player', this.videoOpts)
     console.log('link:', this.videoInfo.link)
-    if (this.selectedVideo.type === '2') {
-      // this.videoPlayer.src({ type: 'video/mp4', src: this.videoInfo.link })
-      // this.videoPlayer.src({ type: 'video/mp4', src: 'http://localhost:3000/static/test.mp4' })
-      // this.videoPlayer.src({ type: 'video/mp4', src: "" })
-      // this.videoPlayer.src({ type: 'video/mp4', src: '../../../../static/hwd.mp4' })
-      this.$axios.post('uploads/video', {
-        user_id: this.userInfo.userid,
-        vid: this.videoInfo.id,
-      }).then(function(data) {
 
-      })
-    } else {
-      this.videoPlayer.src({ type: 'rtmp/flv', src: this.videoInfo.link })
-    }
     // console.log('erros:',this.videoPlayer.errors)
     /*    this.videoPlayer.errors({
           errors: {
@@ -119,43 +106,85 @@ export default {
       // const display = this.videoPlayer.getChild('errorDisplay');
 
     });
-    this.videoPlayer.on('ready', function(e) {
-      console.log('ready')
-      // console.log(vm.videoPlayer.currentSrc())
-      const display = vm.videoPlayer.getChild('errorDisplay');
-      display.el().classList.remove('vjs-hidden')
-      let div = document.createElement('div')
-      div.classList.add('payTip')
-      vm.$axios.post('user/getAllValidCoupon', {
-        user_id: vm.userInfo.userid,
-        page: 0,
-        pageSize: 100
-      }).then(function({ data }) {
-        vm.validCoupons = data.data
-        div.innerHTML =
-          `
-        <div class='title'>此视屏需要${vm.selectedVideo.price}额度哦！</div>
-        <div class="couponSelector">
-        <label>可以使用：</label>
-        <select name="cars">
-<option value="volvo">${vm.validCoupons[0].discount}折</option>
-</select>
-</div>
-<div>
-<button>确定</button>
-<button>取消</button>
-</div>
+    this.videoPlayer.on('ready', e => {
+      this.$axios.post('public/getVideoInfoById', {
+        id: this.$route.query.id
+      }).then(({ data }) => {
+        this.videoInfo = data.data
+        if (this.videoInfo.type === '2') {
+          this.$axios.post('user/haveVideoAccess', {
+            user_id: this.userInfo.userid,
+            // vid: this.selectedVideo.id
+            vid: this.$route.query.id
+          }).then(function({ data }) {
+            if (data.data.is_allow === 1) {
+              console.log('playVideo')
+              vm.videoPlayer.src({ type: 'video/mp4', src: `http://hyh.bojiatouzi.com/uploads/video/?user_id=${vm.userInfo.userid}&vid=${vm.$route.query.id}` })
+            } else {
+              console.log('not allowed')
+              const display = vm.videoPlayer.getChild('errorDisplay');
+              display.el().classList.remove('vjs-hidden')
+              let div = document.createElement('div')
+              div.classList.add('payTip')
+              vm.$axios.post('user/getAllValidCoupon', {
+                user_id: vm.userInfo.userid
+              }).then(function({ data }) {
+                vm.validCoupons = data.data
+                let optsStr = `
+                  <option value="null">不使用</option>
+                `
+                vm.validCoupons.forEach(function(coupon) {
+                  optsStr += `<option value=${coupon.id}>${coupon.discount}折,有效期至${coupon.expiredate}</option>`
+                })
+                div.innerHTML =
+                  `
+                <div class='title'>此视屏需要${vm.videoInfo.price}额度哦！</div>
+                <div class="couponSelector">
+                <label>可以使用：</label>
+                <select name="coupons" id="coupon-selector">
+                ${optsStr}
+                </select>
+                </div>
+              `
+                let footer = document.createElement('div'),
+                  confirmBtn = document.createElement('button')
+                confirmBtn.innerHTML = '确定'
+                confirmBtn.addEventListener('click', e => {
 
-      `
+                  let selectElem = document.getElementById('coupon-selector')
+
+                  let coupon = {
+                    user_id: vm.userInfo.userid,
+                    vid: vm.videoInfo.id,
+                  }
+                  if (selectElem.options[selectElem.selectedIndex].value !== "null")
+                    coupon['coupo_id'] = selectElem.options[selectElem.selectedIndex].value
+                  console.log(coupon)
+                  vm.$axios.post('user/buyVideo', coupon).then(function({ data }) {
+                    if (data.code === 1)
+                      display.contentEl().innerHTML = "<div class='payTip'>购买视屏成功，请刷新页面观看视屏</div>"
+                    else
+                      display.contentEl().innerHTML = "<div class='payTip'>购买视屏失败!</div>"
+                  })
+
+                })
+                footer.appendChild(confirmBtn)
+                div.appendChild(footer)
+                display.contentEl().appendChild(div)
+
+              })
+            }
+
+          })
+          // this.videoPlayer.src({ type: 'video/mp4', src: this.videoInfo.link })
+          // this.videoPlayer.src({ type: 'video/mp4', src: 'http://localhost:3000/static/test.mp4' })
+          // this.videoPlayer.src({ type: 'video/mp4', src: "" })
+          // this.videoPlayer.src({ type: 'video/mp4', src: '../../../../static/hwd.mp4' })
+          // console.log('upLoadVideo')
+        } else {
+          this.videoPlayer.src({ type: 'rtmp/flv', src: this.videoInfo.link })
+        }
       })
-
-      /*      div.addEventListener('click', function(e) {
-              vm.$router.push({ path: '/order', query: { vid: vm.selectedVideo.id } })
-            })*/
-      display.contentEl().appendChild(div)
-
-      /*      let btn=vm.videoPlayer.getChild('bigPlayButton')
-            btn.disable()*/
     })
 
 

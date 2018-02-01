@@ -53,7 +53,7 @@ export default {
 .balance-wrapper,
 .award-wrapper {
   display: inline-block;
-  width:200px;
+  width:300px;
 }
 
 
@@ -63,7 +63,7 @@ export default {
 
 .note {
   font-size: 12px;
-  color: #93999f
+  color: #93999f;
 }
 
 .content {

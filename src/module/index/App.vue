@@ -37,17 +37,16 @@ export default {
     }
   },
   mounted() {
-
+    this.$axios.get('http://localhost:3000/static/test.mp4').then(({ data }) => {
+      console.log('load test.mp4')
+    })
 
     let vm = this
     this.$axios.post('/public/islogin').then(function({ data }) {
       if (data.code === 0) {
+        console.log('app mount')
         vm.$store.commit("SET_STATUS", 'onLine')
-        vm.$axios.post('public/getUserInfoById', {
-          user_id: data.data.userid
-        }).then(function({ data }) {
-          vm.$store.commit('SET_USERINFO', data.data)
-        })
+        vm.$store.commit('SET_USERINFO', data.data)
       }
     })
     this.holyGrailHeight = this.$refs.holyGrailBody.clientHeight

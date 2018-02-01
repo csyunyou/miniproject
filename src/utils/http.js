@@ -14,7 +14,7 @@ export default {
       baseURL:'http://hyh.bojiatouzi.com',
       url,
       data,
-      timeout: 5000,
+      // timeout: 5000,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
       },

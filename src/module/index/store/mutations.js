@@ -1,5 +1,6 @@
 export default{
 	SET_USERINFO:function(state,info){
+		console.log('info',info)
 		state.userInfo=info
 	},
 /*	SET_:function(state,islogin){

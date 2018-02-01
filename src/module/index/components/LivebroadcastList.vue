@@ -69,7 +69,7 @@ export default {
         tableData: [],
         totalCount: 0
       },
-      colNum:null,
+      colNum: null,
       proceedRowNum: 2,
       endRowNum: 1,
       contentWidth: 0,
@@ -88,9 +88,9 @@ export default {
     keyword() {
       return this.$store.state.liveKeyword
     },
-/*    colNum() {
-      return Math.floor(this.$refs.livebroadcastList.clientWidth / 200)
-    },*/
+    /*    colNum() {
+          return Math.floor(this.$refs.livebroadcastList.clientWidth / 200)
+        },*/
     proceedPageSize() {
       return this.proceedRowNum * this.colNum
     },
@@ -108,8 +108,9 @@ export default {
         video_id: video.id,
         type: "live"
       })
-      this.$router.push({ path: `/videoPlayer`})
-      this.$store.commit('SET_SELECTED_VIDEO',video)
+      this.$router.push({ path: `/videoPlayer`, query: { id: `${video.id}`} })
+
+      // this.$store.commit('SET_SELECTED_VIDEO',video)
     },
     rowClickHandler(row, evt, col) {
       this.$axios.post('user/addRecord', {
@@ -187,7 +188,7 @@ export default {
         this.$store.commit('SET_IS_FIRST_SEARCH', false)
         this.keyword = this.$route.query.keyword*/
     console.log(this.colNum, window.getComputedStyle(this.$refs.proceedList, null).width)
-    this.colNum=Math.floor(this.$refs.proceedList.clientWidth / 200)
+    this.colNum = Math.floor(this.$refs.proceedList.clientWidth / 200)
     //20px margin,200px width video
     this.videoStyle.marginRight = (+window.getComputedStyle(this.$refs.proceedList, null).width.split('px')[0] - 40 - 200 * this.colNum) / (this.colNum - 1) + 'px'
     this.getAllProceedVideo()

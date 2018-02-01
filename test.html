@@ -1,29 +1,37 @@
+<!DOCTYPE html>
 <html>
+
 <head>
-  <style type="text/css">
-    div{
-      border: 1px solid black;
-    }
-    .parent{
-      /*height: 100px;*/
-    }
-/*    .left{
-      height: 100px;
-    }*/
-    .left{;
-      float:left;
-      height: 100%;
-      /*height: 100%;*/
-    }
-    .right{
-      height: 100px;
-    }
-  </style>
+  <title>使用XMLHttpRequest上传文件</title>
+  <script type="text/javascript">
+  var xhr = new XMLHttpRequest();
+
+
+  //上传文件
+  function uploadFile() {
+    var fd = new FormData();
+    //关联表单数据,可以是自定义参数
+    formData.append("user_id", "3")
+    formData.append("name", "pic")
+    formData.append("pic", document.getElementById('fileName').files[0])
+
+    //监听事件
+
+    //发送文件和表单自定义参数
+    xhr.open('post', 'http://hyh.bojiatouzi.com/user/upLoadAvatar', true);
+
+    xhr.send(fd);
+  }
+
+  </script>
 </head>
-  <body>
-    <div class="parent">
-      <div class="left"></div>
-      <div class="right"></div>
-    </div>
-  </body>
+
+<body>
+  <div class="row">
+    <label for="fileToUpload">选择文件</label>
+    <input type="file" name="fileName" id="fileName" />
+  </div>
+  <input type="button" onclick="uploadFile()" value="上传" />
+</body>
+
 </html>
