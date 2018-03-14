@@ -49,13 +49,13 @@
         </el-form>
       </div>
       <div class="secureInfo-wrapper" v-show="activeTag==='second'">
-        <div class="item">
+<!--         <div class="item">
           <span>昵称:</span>
           <span>{{secureInfo.nickname}}</span>
-        </div>
+        </div> -->
         <div class="item">
           <span>手机:</span>
-          <span>{{secureInfo.cellphone}}</span>
+          <span>{{secureInfo.mobile}}</span>
         </div>
         <div class="item">
           <span>邮箱:</span>
@@ -93,11 +93,7 @@ export default {
 
             },*/
       showTips: true,
-      secureInfo: {
-        nickname: 'yunyou',
-        cellphone: '13235711219',
-        email: '1205361247@qq.com'
-      },
+      secureInfo: {},
       activeTag: 'first',
       showBasicInfo: true,
       cityOptions: [{
@@ -157,6 +153,8 @@ export default {
         monthlyIncome: this.form.monthlyIncome
       }).then(function({ data }) {
         vm.modifyMsg = data.str
+        if (data.award > 0)
+          vm.modifyMsg += `,获得${data.award}额度奖励`
 
       })
     }
@@ -177,6 +175,11 @@ export default {
         education: +info.education,
         monthlyIncome: info.monthlyincome
       }
+    })
+    this.$axios.post('user/getSecurityInfo', {
+      user_id: this.userInfo.userid
+    }).then(({ data }) => {
+      this.secureInfo = data.data
     })
   }
 }

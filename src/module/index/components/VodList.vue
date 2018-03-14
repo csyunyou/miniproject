@@ -55,6 +55,9 @@ export default {
     },
     selectedCategory() {
       return this.$store.state.selectedCategory
+    },
+    status(){
+      return this.$store.state.status
     }
   },
   props: ["contentHeight"],
@@ -77,6 +80,10 @@ export default {
   methods: {
     itemClickHandler(video) {
       console.log(video)
+      if(this.status==='offLine'){
+        this.$store.commit('SET_SHOWLOGIN',true)
+        return 
+      }
       this.$axios.post('user/addRecord', {
         user_id: this.userInfo.userid,
         video_id: video.id,

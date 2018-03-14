@@ -69,7 +69,7 @@ export default {
               center: true
             })
           } else {
-            vm.$alert(`恭喜您，获得${data.data.discount}折优惠券`, '签到成功', {
+            vm.$alert(`恭喜您，获得${data.data.discount}折优惠券,有效期至${data.data.expiredate}`, '签到成功', {
               type: 'success',
               center: true
             })

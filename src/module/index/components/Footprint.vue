@@ -2,13 +2,16 @@
   <div class="footprint">
     <div class="category-statistics">
       <div class="title">类别统计</div>
-      <div class="piechart"></div>
+      <div class="piechart">
+          <div class="live-piechart"></div>
+          <div class="vod-piechart"></div>
+      </div>
     </div>
     <div class="division"></div>
     <div class="record-wrapper">
       <div class="title">脚步记录</div>
       <div class="recordTable">
-        <el-table :data="tableData" style="width:460px">
+        <el-table :data="tableData" style="width:460px" @row-click="rowClickHandler">
           <el-table-column prop="title" label="标题" sortable width="180">
           </el-table-column>
           <el-table-column prop="type" label="类型" width="180">
@@ -71,8 +74,9 @@ export default {
                 type: "视屏"
               }*/
       ],
-      pieData: [],
-      radius: 70,
+      livePieData: [],
+      vodPieData: [],
+      radius: 100,
       categoryColorMap: ['#7fc97f', '#beaed4', '#fdc086'],
       currentPage: 1,
       pageSize: 4,
@@ -84,8 +88,8 @@ export default {
       return this.$store.state.userInfo
     }
   },
-  watch:{
-    currentPage(){
+  watch: {
+    currentPage() {
       this.getAllRecords()
     }
   },
@@ -93,12 +97,21 @@ export default {
     filterTag(value, row) {
       return row.category === value;
     },
-    drawPieChart() {
+    rowClickHandler(row, evt, col) {
+      this.$router.push({ path: `/videoPlayer`, query: { id: `${row.vid}` } })
+    },
+    drawPieChart(data, root,title) {
       let vm = this
-      var svg = d3.select(".piechart")
-        .append("svg")
-        .append("g").attr("transform", `translate(${this.radius*2},${this.radius})`)
+      var svg = root
+        .append("svg").attr("width",this.radius*2).attr("height",this.radius*2)
+        .append("g").attr("transform", `translate(${this.radius},${this.radius})`)
 
+
+      svg.append("text").text(title).attr("text-anchor","middle").attr("dy",5)
+      if(data.length===0){
+        svg.append("text").text("暂无观看记录").attr("text-anchor","middle").attr("dy",30)
+        return 
+      }
       let slices = svg.append("g").attr("class", "slices"),
         labels = svg.append("g").attr("class", "labels"),
         lines = svg.append("g").attr("class", "lines");
@@ -108,10 +121,10 @@ export default {
         return d.count;
       });
       var arc = d3.arc()
-        .outerRadius(this.radius * 0.7)
-        .innerRadius(this.radius * 0.4);
+        .outerRadius(this.radius * 0.5)
+        .innerRadius(this.radius * 0.3);
       // console.log(pie(this.pieData))
-      slices.selectAll('.slice').data(pie(this.pieData)).enter().append("path").attr("d", arc)
+      slices.selectAll('.slice').data(pie(data)).enter().append("path").attr("d", arc)
         .attr("class", "slice").style("fill", (val, idx) => this.categoryColorMap[idx])
 
       //Label
@@ -119,16 +132,16 @@ export default {
         return d.startAngle + (d.endAngle - d.startAngle) / 2;
       }
       var outerArc = d3.arc()
-        .innerRadius(this.radius * 0.9)
-        .outerRadius(this.radius * 0.9);
+        .innerRadius(this.radius * 0.7)
+        .outerRadius(this.radius * 0.7);
       var text = labels.selectAll(".label")
-        .data(pie(this.pieData));
+        .data(pie(data).filter(d => d.value > 0));
 
       text.enter()
         .append("text")
         .attr("transform", function(d) {
           let pos = outerArc.centroid(d);
-          pos[0] = vm.radius * (midAngle(d) < Math.PI ? 1 : -1);
+          pos[0] = vm.radius *0.7* (midAngle(d) < Math.PI ? 1 : -1);
           return "translate(" + pos + ")";
         })
         .attr("font-size", "10px")
@@ -139,13 +152,12 @@ export default {
         .text(function(d) {
           return d.data.category_title;
         });
-
       //PolyLine
-      lines.selectAll(".line").data(pie(this.pieData)).enter().append("polyline").attr("class",
+      lines.selectAll(".line").data(pie(data).filter(d => d.value > 0)).enter().append("polyline").attr("class",
           "line")
         .attr("points", function(d) {
           let pos = outerArc.centroid(d);
-          pos[0] = vm.radius * 0.9 * (midAngle(d) < Math.PI ? 1 : -1);
+          pos[0] = vm.radius * 0.7 * (midAngle(d) < Math.PI ? 1 : -1);
           return [arc.centroid(d), outerArc.centroid(d), pos];
         })
         .attr("fill", "none")
@@ -155,7 +167,7 @@ export default {
 
     },
     getAllRecords() {
-      let vm=this
+      let vm = this
       this.$axios.post('user/getAllRecords', {
         user_id: this.userInfo.userid,
         page: this.currentPage - 1,
@@ -202,10 +214,18 @@ export default {
                 }*/
     let vm = this
     this.$axios.post('user/getRecordCategoryCount', {
-      user_id: this.userInfo.userid
+      user_id: this.userInfo.userid,
+      type: 1
     }).then(({ data }) => {
-      this.pieData = data.data
-      vm.drawPieChart()
+      this.livePieData = data.data
+      vm.drawPieChart(this.livePieData, d3.select('.live-piechart'),"直播")
+    })
+    this.$axios.post('user/getRecordCategoryCount', {
+      user_id: this.userInfo.userid,
+      type: 2
+    }).then(({ data }) => {
+      this.vodPieData = data.data
+      vm.drawPieChart(this.vodPieData, d3.select('.vod-piechart'),"点播")
     })
     this.getAllRecords()
   }
@@ -226,5 +246,18 @@ export default {
 .category-statistics .piechart svg {
   font-size: 15px;
 }
+
+.piechart {
+  display: flex;
+  justify-content: space-around;
+  /*padding: 0 100px;*/
+}
+
+.vod-piechart,
+.live-piechart {
+  flex: none;
+  font-size: 15px;
+}
+
 
 </style>

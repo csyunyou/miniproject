@@ -12,9 +12,9 @@
     </div>
     <div class="division"></div>
     <div class="linkInfo">
-      <div class="inviteLink-wrapper">
+      <div class="inviteLink-wrapper item">
         <div class="title">邀请注册链接:</div>
-        <div class="content">{{inviteLink}}</div>
+        <span class="invite-link">{{inviteLink}}</span>
         <div class="qrCode-wrapper">
           <el-button type="primary" icon="el-icon-share" size="mini" @click="showQRCode=!showQRCode" class="shareBtn">分享</el-button>
           <div class="qrCode" v-show="showQRCode">
@@ -27,9 +27,21 @@
         </div>
         <!-- <i class="el-icon-share"></i> -->
       </div>
-      <div>
-        <div class="title">邀请码:</div>
-        <div class="content">{{userInfo.invite}}</div>
+      <div class="item">
+        <span class="title">邀请码:</span>
+        <span class="content">{{userInfo.invite}}</span>
+      </div>
+      <div class="item">
+        <span class="title">朋友邀请码:</span>
+        <span v-if="userInfo.friendInvite">
+          {{userInfo.friendInvite}}
+        </span>
+        <div v-else class="invite-form">
+          <el-input v-model="friendInvite" placeholder="请输入内容" class="invitecode-input" size="medium"></el-input>
+          <el-button type="primary" icon="el-icon-edit" size="medium" @click="inviteHandler">填写</el-button>
+        </div>
+        <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo"></el-alert>
+
       </div>
     </div>
   </div>
@@ -45,7 +57,9 @@ export default {
             inviteCode: 'YUQIXS',*/
       showQRCode: false,
       clickNum: 0,
-      shareaward:0
+      shareaward: 0,
+      friendInvite:"",
+      warningInfo:""
     }
   },
   computed: {
@@ -59,7 +73,20 @@ export default {
       return `http://localhost:8087/module/invitation.html?inviteCode=${this.userInfo.invite}&id=${this.userInfo.userid}`
     }
   },
-  methods: {},
+  methods: {
+    inviteHandler(){
+      this.$axios.post('user/addFriendInvite',{
+        user_id:this.userInfo.userid,
+        friend_invite:this.friendInvite
+      }).then(({data})=>{
+        if(data.code===0){
+          this.warningInfo=data.str
+        }else{
+          this.$store.commit('SET_USERINFO', {...this.userInfo,friendInvite:this.friendInvite})
+        }
+      })
+    }
+  },
   mounted() {
     this.$axios.post("user/getClickNum", {
       user_id: this.userInfo.userid
@@ -77,7 +104,10 @@ export default {
 /*.share {
   margin: 20px 40px;
 }*/
-
+.invitecode-input{
+  /*display: inline-block;*/
+  width:auto;
+}
 .qrCode .header {
   margin-top: 10px;
   text-align: center;
@@ -85,13 +115,10 @@ export default {
 
 .title {
   font-weight: bold;
-  margin-bottom: 10px;
 }
 
-.content {
-  margin-left: 50px;
-  margin-right: 10px;
-  display: inline-block;
+.invite-link {
+  margin-left: 20px;
 }
 
 .shareScore-wrapper,
@@ -104,6 +131,9 @@ export default {
   margin: 20px;
 }
 
+.linkInfo .item:nth-child(n+2){
+  margin-bottom:10px;
+}
 .shareScore-wrapper {
   margin-right: 100px;
 }
@@ -164,5 +194,7 @@ export default {
   border-right: 9px solid transparent;
   border-bottom: 10px solid #fff;
 }
-
+.invite-form{
+  display: inline-block;
+}
 </style>

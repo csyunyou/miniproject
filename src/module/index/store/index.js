@@ -18,7 +18,8 @@ const state = {
 	liveKeyword:null,
 	vodKeyword:null,
 	selectedCategory:null,
-	selectedVideo:null
+	selectedVideo:null,
+	pwdCode:null
 };
 export default new Vuex.Store({
   state,

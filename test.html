@@ -1,37 +1,60 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>使用XMLHttpRequest上传文件</title>
-  <script type="text/javascript">
-  var xhr = new XMLHttpRequest();
-
-
-  //上传文件
-  function uploadFile() {
-    var fd = new FormData();
-    //关联表单数据,可以是自定义参数
-    formData.append("user_id", "3")
-    formData.append("name", "pic")
-    formData.append("pic", document.getElementById('fileName').files[0])
-
-    //监听事件
-
-    //发送文件和表单自定义参数
-    xhr.open('post', 'http://hyh.bojiatouzi.com/user/upLoadAvatar', true);
-
-    xhr.send(fd);
-  }
-
-  </script>
+    <meta charset="UTF-8">
+    <title>zzw_drap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #box {
+            position: absolute;
+            top: 100px;
+            left: 200px;
+            width: 500px;
+        }
+        #bar {
+            padding-left:50px; 
+            height: 50px;
+            line-height: 50px;
+            color: white;
+            background-color: #aaa;
+            cursor: move;
+        }
+        #content {
+            padding:30px 0 0 50px ;
+            height: 300px;
+            background-color: #eee;
+        }
+    </style>
 </head>
 
-<body>
-  <div class="row">
-    <label for="fileToUpload">选择文件</label>
-    <input type="file" name="fileName" id="fileName" />
-  </div>
-  <input type="button" onclick="uploadFile()" value="上传" />
+  <body>
+    <script type="text/javascript">
+        var s = document.body.style;
+        var computed;
+        if (document.body.currentStyle) {
+          computed = document.body.currentStyle;
+        } else {
+          computed = document.defaultView.getComputedStyle(document.body, '');
+        }
+ 
+    function testOneByOne(){
+      s.color = 'red';
+      // tmp = computed.backgroundColor;
+      // s.color = 'white';
+      // tmp = computed.backgroundImage;
+      // s.color = 'green';
+      // tmp = computed.backgroundAttachment;
+    }
+    
+    function testAll() {
+      s.padding = '4px';
+    }
+    </script>    
+    color test <br />
+    <button onclick="testOneByOne()">Test One by One</button>
+    <button onclick="testAll()">Test All</button>
 </body>
-
 </html>

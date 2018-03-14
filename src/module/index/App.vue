@@ -36,20 +36,28 @@ export default {
       holyGrailHeight: 0
     }
   },
+  methods: {
+    setPassword() {
+      let url = window.location.href
+      let code = url.split('?')[1].split('=')
+      console.log(code)
+      if (code[0] === 'pwdCode' && code[1])
+        this.$store.commit("SET_PWD_CODE", code[1])
+    },
+    autoLogin() {
+      let vm=this
+      this.$axios.post('/public/islogin').then(function({ data }) {
+        if (data.code === 0) {
+          vm.$store.commit('SET_STATUS', 'onLine')
+          vm.$store.commit('SET_USERINFO', data.data)
+        }
+      })
+    }
+  },
   mounted() {
-    this.$axios.get('http://localhost:3000/static/test.mp4').then(({ data }) => {
-      console.log('load test.mp4')
-    })
-
-    let vm = this
-    this.$axios.post('/public/islogin').then(function({ data }) {
-      if (data.code === 0) {
-        console.log('app mount')
-        vm.$store.commit("SET_STATUS", 'onLine')
-        vm.$store.commit('SET_USERINFO', data.data)
-      }
-    })
     this.holyGrailHeight = this.$refs.holyGrailBody.clientHeight
+    this.autoLogin()
+    this.setPassword()
     // console.log(this.$refs.holyGrailBody.clientHeight,this.$refs.holyGrailBody.offsetHeight)
   }
 }

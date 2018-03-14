@@ -2,10 +2,10 @@
   <div class="setPassword">
     <div class="header">
       <span>设置新密码</span>
-      <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
+      <i class="el-icon-circle-close-outline close-btn" @click="closeBtnHandler"></i>
     </div>
-    <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo">
-    </el-alert>
+    <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo"></el-alert>
+    <el-alert :title="successInfo" type="success" show-icon v-show="successInfo"></el-alert>
     <el-form :model="form" size="small" class="form" ref="form" :rules="rules">
       <el-form-item prop="password">
         <el-input v-model="form.password"></el-input>
@@ -31,10 +31,11 @@ export default {
         password: [{ validator: this.passwordValidator, trigger: 'blur' }],
         confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }]
       },
-      warningInfo: ""
+      warningInfo: "",
+      successInfo: ""
     }
   },
-  props: ['credential'],
+  props: ['credential', 'type'],
   methods: {
     passwordValidator(rule, val, cb) {
       if (val === '') {
@@ -57,26 +58,46 @@ export default {
     },
     submit() {
       let vm = this
+
       this.$refs.form.validate(valid => {
         if (valid) {
           console.log('success')
-          this.$axios.post('public/setPassword', {
-            mobile: this.credential.mobile,
-            checkCode: this.credential.checkCode,
-            password: this.form.password
-          }).then(function({ data }) {
-            vm.warningInfo = data.str
-            /*            if (data.str === 1) {
-                          vm.$emit("validateSuccess")
-                        } else if (response.status === 1) {
-                          vm.warningInfo = "账户不存在或密码错误"
-                        }*/
-          })
+          if (this.type === "phone") {
+            this.$axios.post('public/setPassword', {
+              mobile: this.credential.mobile,
+              checkCode: this.credential.checkCode,
+              password: this.form.password
+            }).then(function({ data }) {
+              vm.successInfo = data.str
+              /*            if (data.str === 1) {
+                            vm.$emit("validateSuccess")
+                          } else if (response.status === 1) {
+                            vm.warningInfo = "账户不存在或密码错误"
+                          }*/
+            })
+          } else if (this.type === "email") {
+            this.$axios.post("public/setPwdBypwdCode", {
+              pwdCode: this.credential,
+              password: this.form.password
+            }).then(({ data }) => {
+              vm.successInfo = data.str
+            })
+          }
+
         } else {
           console.log('erro')
           return false;
         }
       })
+    },
+    resetState(){
+      this.form={}
+      this.warningInfo=""
+      this.successInfo=""
+    },
+    closeBtnHandler(){
+      this.resetState()
+      this.$emit('close')
     }
   }
 }

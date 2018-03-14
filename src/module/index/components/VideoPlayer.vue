@@ -161,8 +161,10 @@ export default {
                     coupon['coupo_id'] = selectElem.options[selectElem.selectedIndex].value
                   console.log(coupon)
                   vm.$axios.post('user/buyVideo', coupon).then(function({ data }) {
-                    if (data.code === 1)
-                      display.contentEl().innerHTML = "<div class='payTip'>购买视屏成功，请刷新页面观看视屏</div>"
+                    if (data.code === 1){
+                      location.reload()
+                      // display.contentEl().innerHTML = "<div class='payTip'>购买视屏成功，请刷新页面观看视屏</div>"
+                    }
                     else
                       display.contentEl().innerHTML = "<div class='payTip'>购买视屏失败!</div>"
                   })
@@ -182,7 +184,8 @@ export default {
           // this.videoPlayer.src({ type: 'video/mp4', src: '../../../../static/hwd.mp4' })
           // console.log('upLoadVideo')
         } else {
-          this.videoPlayer.src({ type: 'rtmp/flv', src: this.videoInfo.link })
+          // this.videoPlayer.src({ type: 'rtmp/flv', src: this.videoInfo.link })
+          this.videoPlayer.src({ type: 'rtmp/flv', src: "rtmp://localhost:1935/live1/room"})
         }
       })
     })

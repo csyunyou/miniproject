@@ -11,6 +11,7 @@ import footprint from '../components/Footprint.vue'
 import loginHint from '../components/LoginHint.vue'
 import coupon from '../components/Coupon.vue'
 import order from '../components/Order.vue'
+import about from '../components/About.vue'
 import test from '../components/Test.vue'
 import axios from '../../../utils/http.js'
 Vue.use(Router)
@@ -56,12 +57,17 @@ const router = new Router({
     },{
       path: '/order',
       component: order
+    },{
+      path: '/about',
+      component: about
     }
   ]
 })
+const whiteList=['/livebroadcastList','/vodList','/','/loginhint','/videoPlayer','/about']
 router.beforeEach((to, from, next) => {
   // console.log('beforeEach')
-  if (to.path !== '/loginhint'&&to.path!=='/')
+  
+  if (whiteList.indexOf(to.path)===-1)
     axios.post('/public/islogin').then(function({data}) {
       if (data.code === 0){
         next()

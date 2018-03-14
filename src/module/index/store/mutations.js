@@ -33,5 +33,8 @@ export default{
 	},
 	SET_SELECTED_VIDEO:function(state,video){
 		state.selectedVideo=video
+	},
+	SET_PWD_CODE:function(state,pwdCode){
+		state.pwdCode=pwdCode
 	}
 }

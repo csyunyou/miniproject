@@ -1,28 +1,44 @@
 <template>
   <div class="video-recommend">
     <div class="live-broadcast">
-      <div class="title"><h4>今日直播类：</h4></div>
-      <ul>
+      <div class="title">
+        <h4>今日直播类：</h4></div>
+      <div class="content">
+        <div v-for="item in 3" class="item">
+          <img src='../../../assets/book1.jpg' height="100" width="130" />
+          <div>标题：红宝书</div>
+          <div>时间：2017年11月14日</div>
+        </div>
+      </div>
+      <!--       <ul>
         <li v-for="item in liveBroadCastItems">
           <a href="">
-      		<span>{{item.itme}}</span>
-      		<span>{{item.name}}</span>
-      		<span>{{item.host}}</span>
-      	</a>
+          <span>{{item.itme}}</span>
+          <span>{{item.name}}</span>
+          <span>{{item.host}}</span>
+        </a>
         </li>
-      </ul>
+      </ul> -->
     </div>
     <div class="vod">
-      <div class="title"><h4>今日视屏类：</h4></div>
-      <ul>
+      <div class="title">
+        <h4>今日视屏类：</h4></div>
+      <div class="content">
+        <div v-for="item in 3" class="item">
+          <img src='../../../assets/book1.jpg' height="100" width="130" />
+          <div>标题：红宝书</div>
+          <div>时间：2017年11月14日</div>
+        </div>
+      </div>
+      <!--       <ul>
         <li v-for="item in vodItems">
           <a href="">
-      		<span>{{item.itme}}</span>
-      		<span>{{item.name}}</span>
-      		<span>{{item.host}}</span>
-      	</a>
+          <span>{{item.itme}}</span>
+          <span>{{item.name}}</span>
+          <span>{{item.host}}</span>
+        </a>
         </li>
-      </ul>
+      </ul> -->
     </div>
   </div>
 </template>
@@ -53,7 +69,19 @@ export default {
 li {
   list-style: none;
 }
-.video-recommend{
-	padding: 40px;
+
+.video-recommend {
+  padding: 10px 40px;
 }
+
+.content {
+  display: flex;
+  justify-content: space-around;
+}
+
+.item {
+  flex: none;
+  font-size: 10px;
+}
+
 </style>

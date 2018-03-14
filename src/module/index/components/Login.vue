@@ -2,27 +2,27 @@
   <div class="login">
     <div class="header">
       <span>登录</span>
-      <i class="el-icon-circle-close-outline close-btn" @click="$emit('close')"></i>
+      <i class="el-icon-circle-close-outline close-btn" @click="closeBtnHandler"></i>
     </div>
     <el-alert :title="warningInfo" type="error" show-icon v-show="warningInfo">
     </el-alert>
     <el-form :model="loginForm" label-width="70px" size="small" class="login-form" ref="loginForm" :rules="rules">
       <el-form-item label="账号" prop="account">
-        <el-input v-model="loginForm.account"></el-input>
+        <el-input v-model="loginForm.account" :type="accountType"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input v-model="loginForm.password"></el-input>
+        <el-input v-model="loginForm.password" type="password"></el-input>
       </el-form-item>
-      <el-form-item label="验证码" prop="verificationCode">
+      <el-form-item label="验证码" prop="verificationCode" v-if="failCount>=3">
         <el-input v-model="loginForm.verificationCode" class="verification-input"></el-input>
         <img :src="verification.dataURL" @click="changeVerification" class="verification-img" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="login">立即登录</el-button>
       </el-form-item>
-      <el-form-item>
-        <el-checkbox v-model="loginForm.autoLogin">下次自动登录</el-checkbox>
-      </el-form-item>
+      <!--       <el-form-item>
+        <el-checkbox v-model="loginForm.memoryAccount">记住账户</el-checkbox>
+      </el-form-item> -->
     </el-form>
     <div class="footer">
       <div @click="turn2Register">注册新账号</div>|
@@ -35,91 +35,126 @@ import axios from 'axios'
 import verification from 'verification-code';
 export default {
   data() {
-      return {
-        loginForm: {
-          account: "",
-          password: "",
-          verificationCode: "",
-          autoLogin: false,
-        },
-        warningInfo: "",
-        rules: {
-          account: [{
-            required: true,
-            message: '请输入账号',
-            trigger: 'blur'
-          }],
-          password: [{
-            required: true,
-            message: '请输入密码',
-            trigger: 'blur'
-          }],
-          verificationCode: [{
-            validator: this.verificationCodeValidator,
-            trigger: 'blur'
-          }]
-        },
-        verification: null
-      }
-    },
-    methods: {
-      login() {
-        let vm = this
-        this.$refs.loginForm.validate((valid) => {
-          if (valid) {
-            this.$axios.post('public/login', {
-              account: this.loginForm.account,
-              password: this.loginForm.password
-            }).then(function({
-              data
-            }) {
-              if (data.code === 1) {
-                vm.$store.commit('SET_STATUS','onLine')
-                vm.$store.commit('SET_USERINFO', data.data)
-                vm.$emit("close")
-                vm.$router.push({
-                  path: '/'
-                })
-              } else {
-                vm.warningInfo = data.str
-              }
-            })
-          } else {
-            console.log('erro')
-            return false;
-          }
-        })
-
+    return {
+      loginForm: {
+        account: "",
+        password: "",
+        verificationCode: "",
       },
-      turn2Register() {
-        this.$emit("close")
-        this.$emit("register")
+      warningInfo: "",
+      rules: {
+        account: [{
+          required: true,
+          message: '请输入账号',
+          trigger: 'blur'
+        }],
+        password: [{
+          required: true,
+          message: '请输入密码',
+          trigger: 'blur'
+        }, {
+          min: 6,
+          message: '密码长度要6位以上',
+          trigger: 'blur'
+        }],
+        verificationCode: [{
+          required: true,
+          validator: this.verificationCodeValidator,
+          trigger: 'blur'
+        }]
       },
-      turn2ForgetPwd() {
-        this.$emit("close")
-        this.$emit("forgetPwd")
-      },
-      changeVerification() {
-        this.verification = verification.create();
-        console.log(this.verification.code)
-      },
-      verificationCodeValidator(rule, val, cb) {
-        if (val === "")
-          cb(new Error('请输入验证码'));
-        else if (val.toLowerCase() !== this.verification.code)
-          cb(new Error('验证码不正确'));
-        else
-          cb();
-      }
-    },
-    created() {
-      this.verification = verification.create();
-
-    },
-    mounted() {
-      // console.log(this.verification.code, this.verification.dataURL, "mounted")
+      verification: null,
+      failCount: 0,
+      userInfo: null,
+      accountType: "text",
     }
+  },
+  methods: {
+    resetState(){
+      this.warningInfo=""
+      this.failCount=0
+      this.loginForm = {}
+    },
+    closeBtnHandler(){
+      this.resetState()
+      this.$emit('close')
+    },
+    login() {
+      let vm = this
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          this.$axios.post('public/login', {
+            account: this.loginForm.account,
+            password: this.loginForm.password
+          }).then(function({
+            data
+          }) {
+            if (data.code === 1) {
+              vm.shouldMemory = vm.loginForm.memoryAccount
+              vm.resetState()
+              vm.$store.commit('SET_STATUS', 'onLine')
+              vm.$store.commit('SET_USERINFO', data.data)
+              vm.$emit("close")
+              vm.$router.push({
+                path: '/'
+              })
+            } else {
+              vm.failCount++
+                vm.warningInfo = data.str
+            }
+          })
+        } else {
+          console.log('erro')
+          return false;
+        }
+      })
+    },
+    logout() {
+      let vm = this
+      this.$axios.post('public/logout').then(function(data) {
+        vm.$store.commit('SET_USERINFO', {})
+        vm.$store.commit('SET_STATUS', "offLine")
+      })
+    },
+    turn2Register() {
+      this.$emit("close")
+      this.$emit("register")
+    },
+    turn2ForgetPwd() {
+      this.$emit("close")
+      this.$emit("forgetPwd")
+    },
+    changeVerification() {
+      this.verification = verification.create();
+      console.log(this.verification.code)
+    },
+    verificationCodeValidator(rule, val, cb) {
+      if (val === "")
+        cb(new Error('请输入验证码'));
+      else if (val.toLowerCase() !== this.verification.code)
+        cb(new Error('验证码不正确'));
+      else
+        cb();
+    }
+  },
+  created() {
+    this.verification = verification.create();
+
+  },
+  mounted() {
+    let vm = this
+
+
+
+    /*    window.onbeforeunload = function(e) {
+          if (!vm.shouldMemory) {
+            vm.logout()
+          };
+        }*/
+    // console.log(this.verification.code, this.verification.dataURL, "mounted")
+  }
 }
+
 </script>
 <style type="text/css" scoped>
 .login {
@@ -173,4 +208,5 @@ export default {
   vertical-align: top;
   margin-left: 10px;
 }
+
 </style>

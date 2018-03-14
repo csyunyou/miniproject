@@ -1,7 +1,11 @@
 <template>
   <div class="student-info">
     <div class="status">
-      <span @click="$store.commit('SET_SHOWLOGIN',true)" v-if="status==='offLine'">登录|注册</span>
+      <div v-if="status==='offLine'">
+        <span @click="$store.commit('SET_SHOWLOGIN',true)">登录</span>
+        <span>|</span>
+        <span @click="showRegister=true">注册</span>
+      </div>
       <span v-else @click="logout">退出</span>
     </div>
     <div class="info">
@@ -11,12 +15,16 @@
         </div>
 
  -->
-        <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid}" name="photo" :with-credentials="true">
+        <div class="avatar-wrapper" @click="showAvatarUpload=true">
           <img v-if="userInfo.imgeUrl" :src='"http://hyh.bojiatouzi.com/"+userInfo.imgeUrl' class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>
+        </div>
+        <!--         <el-upload class="avatar-uploader" action="http://hyh.bojiatouzi.com/User/upLoadAvatar" :show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleAvatarMyError" :data="{user_id:userInfo.userid}" name="photo" :with-credentials="true">
+          <img v-if="userInfo.imgeUrl" :src='"http://hyh.bojiatouzi.com/"+userInfo.imgeUrl' class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload> -->
         <div class="content">
-          <div class="student-name">学生用户</div>
+          <!-- <div class="student-name">学生用户</div> -->
           <div>{{userInfo?userInfo.nickname:"null"}}</div>
         </div>
       </div>
@@ -30,12 +38,13 @@
     </div>
     <!--     <button @click="checkLogin">log in?</button>
     <button @click="setpwd">setpwd</button> -->
-    <div v-show="showLogin||showRegister||showForgetPwd" class="shadow"></div>
+    <div v-show="showLogin||showRegister||showForgetPwd||showSetPwd||showAvatarUpload" class="shadow"></div>
     <div class="register-login-wrapper">
       <login v-show="showLogin" @close="$store.commit('SET_SHOWLOGIN',false)" @register="showRegister=true" @forgetPwd="showForgetPwd=true"></login>
       <register v-show="showRegister" @close="showRegister=false" @login="$store.commit('SET_SHOWLOGIN',true)"></register>
       <forget-password v-show="showForgetPwd" @close="showForgetPwd=false" @validateSuccess="validateSuccessHandler"></forget-password>
-      <set-password v-show="showSetPwd" @close="showSetPwd=false" :credential="setPwdCredential"></set-password>
+      <set-password v-show="showSetPwd" @close="showSetPwd=false" :credential="setPwdCredential" :type="setPwdType"></set-password>
+      <avatar-upload v-show="showAvatarUpload" @close="showAvatarUpload=false"></avatar-upload>
     </div>
     <!--     <form action="http://hyh.bojiatouzi.com/User/upLoadAvatar" enctype="multipart/form-data" method="post">
       <input type="file" name="photo" @change="changeHandler"/>
@@ -48,6 +57,7 @@ import login from './Login.vue'
 import register from './Register.vue'
 import forgetPassword from './ForgetPassword.vue'
 import setPassword from './SetPassword.vue'
+import avatarUpload from './AvatarUpload.vue'
 export default {
   data() {
     return {
@@ -62,7 +72,9 @@ export default {
       showRegister: false,
       showForgetPwd: false,
       showSetPwd: false,
+      showAvatarUpload:false,
       setPwdCredential: null,
+      setPwdType: null,
       // imageUrl: null
       // extraInfoItems:["钱包余额","脚步记录","我的分享","我的优惠","资料补充"]
     }
@@ -82,6 +94,7 @@ export default {
     },
     validateSuccessHandler(credential) {
       console.log('credential', credential)
+      this.setPwdType = "phone"
       this.showSetPwd = true
       this.setPwdCredential = credential
     },
@@ -91,7 +104,7 @@ export default {
     handleAvatarSuccess(res, file) {
       console.log('suceess')
       // console.log('res',res)
-      this.$store.commit('SET_USERINFO',{...this.userInfo,imgeUrl:res.data.imgeUrl})
+      this.$store.commit('SET_USERINFO', { ...this.userInfo, imgeUrl: res.data.imgeUrl })
       // this.imageUrl = URL.createObjectURL(file.raw);
     },
     handleAvatarMyError(error, file) {
@@ -122,36 +135,44 @@ export default {
     },
     status() {
       return this.$store.state.status
+    },
+    pwdCode() {
+      return this.$store.state.pwdCode
+    }
+  },
+  watch: {
+    pwdCode(val) {
+      if (val) {
+        this.setPwdType = "email"
+        this.setPwdCredential = val
+        this.showSetPwd = true
+      }
     }
   },
   components: {
     login,
     register,
     forgetPassword,
-    setPassword
+    setPassword,
+    avatarUpload
   }
 }
 
 </script>
 <style type="text/css" scoped>
-.avatar-uploader {
-  border: 1px dashed #d9d9d9;
+
+
+.avatar-uploader-icon:hover {
+  border-color: #409EFF;
+}
+
+
+.avatar-uploader-icon {
+    border: 1px dashed #d9d9d9;
   border-radius: 6px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-}
-
-.avatar-uploader:hover {
-  border-color: #409EFF;
-}
-
-.avatar-uploader {
-  display: inline-block;
-  margin-right: 5px;
-}
-
-.avatar-uploader-icon {
   font-size: 25px;
   color: #8c939d;
   width: 50px;
@@ -163,7 +184,7 @@ export default {
 .avatar {
   width: 50px;
   height: 50px;
-  display: block;
+  /*display: block;*/
 }
 
 .shadow {
@@ -213,6 +234,7 @@ export default {
 
 
 
+
 /*.avatar {
   display: inline-block;
   margin-right: 5px;
@@ -226,7 +248,7 @@ export default {
   color: #e31a1c;
 }
 
-.maininfo-wrapper .content {
+.maininfo-wrapper .content,.maininfo-wrapper .avatar-wrapper{
   display: inline-block;
 }
 

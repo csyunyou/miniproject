@@ -12,7 +12,7 @@
           </el-form-item>
           <el-form-item label="校验码">
             <el-input v-model="registerForm.checkCode" class="checkCode-input"></el-input>
-            <el-button type="primary" class="checkCode-btn" @click="getCheckcode">免费获取校验码</el-button>
+            <el-button type="primary" class="checkCode-btn" @click="getCheckcode" :disabled="isChecking">{{checkCodeMsg}}</el-button>
             <!-- <img :src="verificationImgSrc" height="32"/> -->
           </el-form-item>
           <el-form-item label="昵称" prop="nickname">
@@ -22,10 +22,10 @@
         <el-input v-model="registerForm.verificationCode"></el-input>
       </el-form-item> -->
           <el-form-item label="密码" prop="password">
-            <el-input v-model="registerForm.password"></el-input>
+            <el-input v-model="registerForm.password" type="password"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" prop="confirmPwd">
-            <el-input v-model="registerForm.confirmPwd"></el-input>
+            <el-input v-model="registerForm.confirmPwd" type="password"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="register">马上注册</el-button>
@@ -48,10 +48,10 @@
         <el-input v-model="registerForm.verificationCode"></el-input>
       </el-form-item> -->
           <el-form-item label="密码" prop="password">
-            <el-input v-model="emailRegForm.password"></el-input>
+            <el-input v-model="emailRegForm.password" type="password"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" prop="confirmPwd">
-            <el-input v-model="emailRegForm.confirmPwd"></el-input>
+            <el-input v-model="emailRegForm.confirmPwd" type="password"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="registerByEmail">马上注册</el-button>
@@ -89,15 +89,30 @@ export default {
       },
       verificationImgSrc: "",
       rules: {
-        phoneNumber: [{ validator: this.phoneValidator, trigger: 'blur' }],
-        email: [{ validator: this.emailValidator, trigger: 'blur' }],
-        password: [{ validator: this.passwordValidator, trigger: 'blur' }],
-        confirmPwd: [{ validator: this.confirmPwdValidator, trigger: 'blur' }],
+        phoneNumber: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: this.phoneValidator, trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { validator: this.emailValidator, trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { validator: this.passwordValidator, trigger: 'blur' },
+          { min: 6, message: '密码长度要6位以上', trigger: 'blur' }
+        ],
+        confirmPwd: [
+          { required: true, message: '请再次输入密码', trigger: 'blur' },
+          { validator: this.confirmPwdValidator, trigger: 'blur' }
+        ],
         nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
       },
       registerMsg: "",
       // emailRegMsg:""
-      tabValue: 'phoneForm'
+      tabValue: 'phoneForm',
+      isChecking: false,
+      checkCodeMsg: '免费获取校验码'
     }
   },
   methods: {
@@ -117,6 +132,11 @@ export default {
             console.log(response)
           })
         },*/
+    resetState() {
+      this.emailRegForm = {}
+      this.registerForm={}
+      this.registerMsg = ""
+    },
     register() {
       let vm = this
       this.$refs.registerForm.validate(valid => {
@@ -129,6 +149,20 @@ export default {
               nickname: this.registerForm.nickname
             }).then(function({ data }) {
             vm.registerMsg = data.str
+            if (data.str === '该手机号已注册') {
+              let start = 7
+              function count() {
+                start--
+                vm.registerMsg = `${data.str},${start}秒后跳转到登录页面`
+                if (start > 0)
+                  setTimeout(count, 1000)
+                else {
+                  vm.resetState()
+                  vm.loginHandler()
+                }
+              }
+              count()
+            }
           })
         } else {
           console.log('error')
@@ -136,7 +170,7 @@ export default {
       })
     },
     registerByEmail() {
-      let vm=this
+      let vm = this
       this.$refs.emailRegForm.validate(valid => {
         if (valid) {
           this.$axios.post(
@@ -146,6 +180,21 @@ export default {
               nickname: this.emailRegForm.nickname
             }).then(function({ data }) {
             vm.registerMsg = data.str
+            if (data.str === '该邮箱已注册') {
+              let start = 7
+
+              function count() {
+                start--
+                vm.registerMsg = `${data.str},${start}秒后跳转到登录页面`
+                if (start > 0)
+                  setTimeout(count, 1000)
+                else {
+                  vm.resetState()
+                  vm.loginHandler()
+                }
+              }
+              count()
+            }
           })
         } else {
           console.log('error')
@@ -153,11 +202,33 @@ export default {
       })
     },
     getCheckcode() {
+      if (!this.registerForm.phoneNumber) {
+        this.registerMsg = "手机号不能为空"
+        return
+      }
+      let vm = this,
+        start = 60
       this.$axios.post('/public/sendCheckcode', {
         mobile: this.registerForm.phoneNumber,
         templatecode: 'tp_code1'
-      }).then(function() {
+      }).then(function({ data }) {
+        if (data.code === 1) {
+          vm.isChecking = true
 
+          function count() {
+            start--
+            vm.checkCodeMsg = `${start}秒后重新获取`
+            if (start > 0)
+              setTimeout(count, 1000)
+            else {
+              vm.checkCodeMsg = '免费获取校验码'
+              vm.isChecking = false
+            }
+          }
+          count()
+        } else {
+          vm.registerMsg = data.str
+        }
       })
     },
     loginHandler() {
@@ -165,42 +236,32 @@ export default {
       this.$emit("login")
     },
     phoneValidator(rule, val, cb) {
-      if (val === "")
-        cb(new Error("请输入手机号"))
-      else if (!val.match(/^1[3|4|5|8][0-9]\d{4,8}$/))
+      if (!val.match(/^1[3|4|5|8][0-9]\d{4,8}$/))
         cb(new Error('无效的手机号'))
       else
         cb()
     },
     emailValidator(rule, val, cb) {
-      if (val === "")
-        cb(new Error("请输入邮箱"))
-      else if (!val.match(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/))
+      if (!val.match(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/))
         cb(new Error('无效的邮箱地址'))
       else
         cb()
     },
     passwordValidator(rule, val, cb) {
-      if (val === '') {
-        cb(new Error('请输入密码'));
-      } else {
-        if (this.tabValue === 'phoneForm' && this.registerForm.confirmPwd !== '') {
-          this.$refs.registerForm.validateField('confirmPwd');
-        }
-        if (this.tabValue === 'emailForm' && this.emailRegForm.confirmPwd !== '') {
-          this.$refs.emailRegForm.validateField('confirmPwd');
-        }
-        cb();
+      if (this.tabValue === 'phoneForm' && this.registerForm.confirmPwd !== '') {
+        this.$refs.registerForm.validateField('confirmPwd');
       }
+      if (this.tabValue === 'emailForm' && this.emailRegForm.confirmPwd !== '') {
+        this.$refs.emailRegForm.validateField('confirmPwd');
+      }
+      cb();
     },
     confirmPwdValidator(rule, val, cb) {
-      if (val === '') {
-        cb(new Error('请再次输入密码'));
-      } else if (this.tabValue === 'phoneForm'&&val !== this.registerForm.password) {
+      if (this.tabValue === 'phoneForm' && val !== this.registerForm.password) {
         cb(new Error('两次输入密码不一致!'));
-      } else if(this.tabValue === 'emailForm'&&val !== this.emailRegForm.password){
+      } else if (this.tabValue === 'emailForm' && val !== this.emailRegForm.password) {
         cb(new Error('两次输入密码不一致!'));
-      }else {
+      } else {
         cb();
       }
     }
@@ -273,6 +334,19 @@ export default {
 .checkCode-input {
   width: 50%;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
