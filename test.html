@@ -29,32 +29,65 @@
         }
     </style>
 </head>
+<body>
+    <div id="box">
+        <div id="bar">可拖拽头部</div>
+        <div id="content">这里是内容</div>
+    </div>
 
-  <body>
-    <script type="text/javascript">
-        var s = document.body.style;
-        var computed;
-        if (document.body.currentStyle) {
-          computed = document.body.currentStyle;
-        } else {
-          computed = document.defaultView.getComputedStyle(document.body, '');
-        }
- 
-    function testOneByOne(){
-      s.color = 'red';
-      // tmp = computed.backgroundColor;
-      // s.color = 'white';
-      // tmp = computed.backgroundImage;
-      // s.color = 'green';
-      // tmp = computed.backgroundAttachment;
-    }
-    
-    function testAll() {
-      s.padding = '4px';
-    }
-    </script>    
-    color test <br />
-    <button onclick="testOneByOne()">Test One by One</button>
-    <button onclick="testAll()">Test All</button>
+    <script>
+
+
+    /*
+    * zzw.drag 2017-3
+    * js实现div可拖拽
+    * @params bar 可以点击拖动的元素
+    * @params box 拖动的整体元素 必须是position: absolute;
+    * 思想：鼠标的clienX/clientY相对值设置为父元素的left/top的相对值
+    */
+
+    var dragBox = function (drag, wrap) {
+
+       function getCss(ele, prop) {
+            return parseInt(window.getComputedStyle(ele)[prop]);
+       }
+
+       var initX,
+           initY,
+           dragable = false,
+           wrapLeft = getCss(wrap, "left"),
+           wrapRight = getCss(wrap, "top");
+
+       drag.addEventListener("mousedown", function (e) {
+            dragable = true;
+            initX = e.clientX;
+            initY = e.clientY;
+       }, false); 
+
+      document.addEventListener("mousemove", function (e) {
+            if (dragable === true ) {
+                var nowX = e.clientX,
+                    nowY = e.clientY,
+                    disX = nowX - initX,
+                    disY = nowY - initY;
+                let left=wrapLeft+disX,top=wrapRight+disY
+                if(left<0) left=0
+                if(top<0) top=0
+                if(left+drag.offsetWidth>window.innerWidth) left=window.innerWidth-drag.offsetWidth
+                wrap.style.left = left + "px";
+                wrap.style.top = top + "px";
+            }
+       });
+
+       drag.addEventListener("mouseup", function (e) {
+            dragable = false;
+            wrapLeft = getCss(wrap, "left");
+            wrapRight = getCss(wrap, "top");
+       }, false); 
+
+    };
+
+    dragBox(document.querySelector("#bar"), document.querySelector("#box"));
+    </script>
 </body>
 </html>

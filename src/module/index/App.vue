@@ -14,6 +14,7 @@
       </aside>
     </div>
     <v-footer></v-footer>
+    <div style="text-align:center;background:#f0f0f0;padding:10px;"><a href="http://webscan.360.cn/index/checkwebsite/url/www.jzjtan.com"><img border="0" src="http://webscan.360.cn/status/pai/hash/d010f61f5a740521da1736b7447f5e84"/></a></div>
   </div>
 </template>
 <script>
